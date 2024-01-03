@@ -12,6 +12,9 @@ export const App = (props: ParentProps) => (
       <A href="/about" end>
         About
       </A>
+      <A href="/firebase" end>
+        Firebase
+      </A>
     </Navbar>
     {props.children}
   </div>
