@@ -3,6 +3,7 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, si
 import { getFirestore, collection, addDoc, serverTimestamp, query, onSnapshot } from 'firebase/firestore';
 import { useAuth } from 'solid-firebase';
 import { createSignal } from 'solid-js';
+import { useGlobalContext } from '@/context/GlobalContext';
 import styles from '@/pages/Firebase/Firebase.module.scss';
 
 const firebaseConfig = {
@@ -60,7 +61,8 @@ const postMessage = async (message: string) => {
 };
 
 export const Firebase = () => {
-  const [email, setEmail] = createSignal('');
+  const context = useGlobalContext();
+
   const [password, setPassword] = createSignal('');
   const state = useAuth(getAuth(firebaseApp));
 
@@ -72,12 +74,12 @@ export const Firebase = () => {
 
       {!state.data ? (
         <>
-          <input placeholder="Enter email here" onChange={e => setEmail(e.currentTarget.value)} />
+          <input placeholder="Enter email here" onChange={e => context.setEmail(e.currentTarget.value)} />
           <input placeholder="Enter password here" onChange={e => setPassword(e.currentTarget.value)} />
-          <button onClick={() => registerUser(email(), password())}>Register</button>
+          <button onClick={() => registerUser(context.email(), password())}>Register</button>
           <button
             onClick={() => {
-              signInUser(email(), password());
+              signInUser(context.email(), password());
             }}
           >
             Sign In
