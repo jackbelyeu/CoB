@@ -4,7 +4,7 @@ import { getFirestore, collection, addDoc, serverTimestamp, query, onSnapshot } 
 import { useAuth } from 'solid-firebase';
 import { createSignal } from 'solid-js';
 import { useGlobalContext } from '@/context/GlobalContext';
-import { PlayerBoard } from '@/game_logic/hex';
+import { mainBoard, playerBoardOne } from '@/game_logic/hex';
 import styles from '@/pages/Firebase/Firebase.module.scss';
 
 const firebaseConfig = {
@@ -66,8 +66,9 @@ const postMessage = async (message: string) => {
   console.log('Document written with ID: ', docRef.id);
 };
 
-const boardTester = (board: PlayerBoard) => {
-  console.log(board);
+const boardTester = () => {
+  console.log(mainBoard);
+  console.log(playerBoardOne);
 };
 
 export const Firebase = () => {
@@ -77,8 +78,6 @@ export const Firebase = () => {
   const state = useAuth(getAuth(firebaseApp));
 
   const [message, setMessage] = createSignal('');
-
-  const boardOne = new PlayerBoard();
 
   return (
     <div class={styles.Firebase}>
@@ -103,7 +102,7 @@ export const Firebase = () => {
           <input placeholder="Enter message here" onChange={e => setMessage(e.currentTarget.value)} />
           <button onClick={() => postMessage(message())}>Send Message</button>
 
-          <button onClick={() => boardTester(boardOne)}>Test the Board</button>
+          <button onClick={() => boardTester()}>Test the Board</button>
         </>
       )}
     </div>
