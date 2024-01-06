@@ -4,6 +4,7 @@ import { getFirestore, collection, addDoc, serverTimestamp, query, onSnapshot } 
 import { useAuth } from 'solid-firebase';
 import { createSignal } from 'solid-js';
 import { useGlobalContext } from '@/context/GlobalContext';
+import { PlayerBoard } from '@/game_logic/hex';
 import styles from '@/pages/Firebase/Firebase.module.scss';
 
 const firebaseConfig = {
@@ -52,12 +53,21 @@ const signInUser = async (email: string, password: string) => {
   }
 };
 
+const signOutUser = () => {
+  unsubscribe();
+  signOut(auth);
+};
+
 const postMessage = async (message: string) => {
   const docRef = await addDoc(collection(db, 'messages'), {
     createdAt: serverTimestamp(),
     text: message,
   });
   console.log('Document written with ID: ', docRef.id);
+};
+
+const boardTester = (board: PlayerBoard) => {
+  console.log(board);
 };
 
 export const Firebase = () => {
@@ -67,6 +77,8 @@ export const Firebase = () => {
   const state = useAuth(getAuth(firebaseApp));
 
   const [message, setMessage] = createSignal('');
+
+  const boardOne = new PlayerBoard();
 
   return (
     <div class={styles.Firebase}>
@@ -87,10 +99,11 @@ export const Firebase = () => {
         </>
       ) : (
         <>
-          <button onClick={() => signOut(auth)}>Sign Out</button>
-
+          <button onClick={() => signOutUser()}>Sign Out</button>
           <input placeholder="Enter message here" onChange={e => setMessage(e.currentTarget.value)} />
           <button onClick={() => postMessage(message())}>Send Message</button>
+
+          <button onClick={() => boardTester(boardOne)}>Test the Board</button>
         </>
       )}
     </div>
