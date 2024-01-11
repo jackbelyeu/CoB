@@ -2,9 +2,9 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { getFirestore, collection, addDoc, serverTimestamp, query, onSnapshot } from 'firebase/firestore';
 import { useAuth } from 'solid-firebase';
-import { createSignal } from 'solid-js';
+import { createSignal, For, Show } from 'solid-js';
 import { useGlobalContext } from '@/context/GlobalContext';
-import { mainBoard, playerBoardOne } from '@/game_logic/hex';
+import { mainBoard, keyTiles, gameFunctions, playerBoardOne } from '@/game_logic/hex';
 import styles from '@/pages/Firebase/Firebase.module.scss';
 
 const firebaseConfig = {
@@ -28,7 +28,7 @@ const unsubscribe = onSnapshot(q, querySnapshot => {
   querySnapshot.forEach(doc => {
     messages.push(doc.data().text);
   });
-  console.log('This is working');
+  console.log('I am subscribed');
 });
 
 const auth = getAuth(firebaseApp);
@@ -69,6 +69,7 @@ const postMessage = async (message: string) => {
 const boardTester = () => {
   console.log(mainBoard);
   console.log(playerBoardOne);
+  console.log(keyTiles);
 };
 
 export const Firebase = () => {
@@ -102,7 +103,25 @@ export const Firebase = () => {
           <input placeholder="Enter message here" onChange={e => setMessage(e.currentTarget.value)} />
           <button onClick={() => postMessage(message())}>Send Message</button>
 
+          <br />
           <button onClick={() => boardTester()}>Test the Board</button>
+          <button onClick={() => gameFunctions.unsetBoard(mainBoard)}>Test the Unset</button>
+          <button onClick={() => gameFunctions.buyTile(mainBoard[4].hex[1], keyTiles, 0)}>Test Buying Mine</button>
+
+          <br />
+          <div>
+            <For each={playerBoardOne}>
+              {(row, rowIndex) => (
+                <div>
+                  <For each={row}>
+                    {(cell, cellIndex) =>
+                      cell != null && <button onClick={() => cell.addTile}>This is a HexSpace</button>
+                    }
+                  </For>
+                </div>
+              )}
+            </For>
+          </div>
         </>
       )}
     </div>

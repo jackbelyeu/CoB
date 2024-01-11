@@ -1,44 +1,4 @@
-export class HexTile {
-  type: tileType;
-  dieValue: number;
-  hasTile: boolean;
-
-  constructor(t: tileType, d: number) {
-    this.type = t;
-    this.dieValue = d;
-    this.hasTile = false;
-  }
-
-  switchHasTile() {
-    this.hasTile = !this.hasTile;
-  }
-}
-
-class Depot {
-  hex: HexTile[];
-  good: HexTile[];
-  number: number;
-
-  constructor(hexOne: tileType, hexTwo: tileType, n: number) {
-    this.hex = [];
-    this.good = [];
-    this.number = n;
-    this.addTile(new HexTile(hexOne, n));
-    this.addTile(new HexTile(hexTwo, n));
-  }
-
-  addTile(h: HexTile) {
-    if (h.type === tileType.Goods) {
-      this.good.push(h);
-    } else this.hex.push(h);
-  }
-
-  findTile(h: HexTile) {
-    return this.hex.find(foundTile => foundTile === h);
-  }
-}
-
-export const enum tileType {
+export const enum TileType {
   Buildings,
   Livestocks,
   Monasteries,
@@ -46,86 +6,194 @@ export const enum tileType {
   Mines,
   Ships,
   Goods,
+  Workers,
+}
+
+const enum LivestockType {
+  Goats,
+  Pigs,
+  Cows,
+  Sheep,
+}
+
+export class Hex {
+  type: TileType;
+
+  constructor(t: TileType) {
+    this.type = t;
+  }
+}
+
+export class LivestockHex extends Hex {
+  animal: LivestockType;
+  number: number;
+
+  constructor(a: LivestockType, n: number) {
+    super(TileType.Livestocks);
+    this.animal = a;
+    this.number = n;
+  }
+}
+
+class HexSpace {
+  type: TileType;
+  dieValue: number;
+  hex: Hex | null;
+
+  constructor(t: TileType, d: number) {
+    this.type = t;
+    this.dieValue = d;
+    this.hex = null;
+  }
+
+  addTile(h: Hex | null) {
+    this.hex = h;
+  }
+
+  removeTile() {
+    this.hex = null;
+  }
+
+  playTile = (keyTiles: (Hex | null)[], i: number) => {
+    this.addTile(keyTiles[i]);
+    keyTiles[i] = null;
+  };
+}
+
+class Depot {
+  hex: HexSpace[];
+  good: Hex[];
+
+  constructor(hexOne: TileType, hexTwo: TileType, n: number) {
+    this.hex = [new HexSpace(hexOne, n), new HexSpace(hexTwo, n)];
+    this.good = [];
+  }
+
+  addGood(good: Hex) {
+    this.good.push(good);
+  }
 }
 
 export const mainBoard: Depot[] = [
-  new Depot(tileType.Buildings, tileType.Ships, 1),
-  new Depot(tileType.Monasteries, tileType.Castles, 2),
-  new Depot(tileType.Livestocks, tileType.Buildings, 3),
-  new Depot(tileType.Buildings, tileType.Ships, 4),
-  new Depot(tileType.Monasteries, tileType.Mines, 5),
-  new Depot(tileType.Livestocks, tileType.Buildings, 6),
+  new Depot(TileType.Buildings, TileType.Ships, 1),
+  new Depot(TileType.Monasteries, TileType.Castles, 2),
+  new Depot(TileType.Livestocks, TileType.Buildings, 3),
+  new Depot(TileType.Buildings, TileType.Ships, 4),
+  new Depot(TileType.Monasteries, TileType.Mines, 5),
+  new Depot(TileType.Livestocks, TileType.Buildings, 6),
 ];
 
-export const playerBoardOne: (HexTile | null)[][] = [
+export const playerBoardOne: (HexSpace | null)[][] = [
   [
     null,
     null,
     null,
-    new HexTile(tileType.Livestocks, 6),
-    new HexTile(tileType.Castles, 5),
-    new HexTile(tileType.Castles, 4),
-    new HexTile(tileType.Monasteries, 3),
+    new HexSpace(TileType.Livestocks, 6),
+    new HexSpace(TileType.Castles, 5),
+    new HexSpace(TileType.Castles, 4),
+    new HexSpace(TileType.Monasteries, 3),
   ],
   [
     null,
     null,
-    new HexTile(tileType.Livestocks, 2),
-    new HexTile(tileType.Livestocks, 1),
-    new HexTile(tileType.Castles, 6),
-    new HexTile(tileType.Monasteries, 5),
-    new HexTile(tileType.Buildings, 4),
+    new HexSpace(TileType.Livestocks, 2),
+    new HexSpace(TileType.Livestocks, 1),
+    new HexSpace(TileType.Castles, 6),
+    new HexSpace(TileType.Monasteries, 5),
+    new HexSpace(TileType.Buildings, 4),
   ],
   [
     null,
-    new HexTile(tileType.Livestocks, 5),
-    new HexTile(tileType.Livestocks, 4),
-    new HexTile(tileType.Buildings, 3),
-    new HexTile(tileType.Monasteries, 1),
-    new HexTile(tileType.Buildings, 2),
-    new HexTile(tileType.Buildings, 3),
+    new HexSpace(TileType.Livestocks, 5),
+    new HexSpace(TileType.Livestocks, 4),
+    new HexSpace(TileType.Buildings, 3),
+    new HexSpace(TileType.Monasteries, 1),
+    new HexSpace(TileType.Buildings, 2),
+    new HexSpace(TileType.Buildings, 3),
   ],
   [
-    new HexTile(tileType.Ships, 6),
-    new HexTile(tileType.Ships, 1),
-    new HexTile(tileType.Ships, 2),
-    new HexTile(tileType.Castles, 6),
-    new HexTile(tileType.Ships, 5),
-    new HexTile(tileType.Ships, 4),
-    new HexTile(tileType.Ships, 1),
+    new HexSpace(TileType.Ships, 6),
+    new HexSpace(TileType.Ships, 1),
+    new HexSpace(TileType.Ships, 2),
+    new HexSpace(TileType.Castles, 6),
+    new HexSpace(TileType.Ships, 5),
+    new HexSpace(TileType.Ships, 4),
+    new HexSpace(TileType.Ships, 1),
   ],
   [
-    new HexTile(tileType.Buildings, 2),
-    new HexTile(tileType.Buildings, 5),
-    new HexTile(tileType.Mines, 4),
-    new HexTile(tileType.Buildings, 3),
-    new HexTile(tileType.Buildings, 1),
-    new HexTile(tileType.Livestocks, 2),
+    new HexSpace(TileType.Buildings, 2),
+    new HexSpace(TileType.Buildings, 5),
+    new HexSpace(TileType.Mines, 4),
+    new HexSpace(TileType.Buildings, 3),
+    new HexSpace(TileType.Buildings, 1),
+    new HexSpace(TileType.Livestocks, 2),
     null,
   ],
   [
-    new HexTile(tileType.Buildings, 6),
-    new HexTile(tileType.Mines, 1),
-    new HexTile(tileType.Monasteries, 2),
-    new HexTile(tileType.Buildings, 5),
-    new HexTile(tileType.Buildings, 6),
+    new HexSpace(TileType.Buildings, 6),
+    new HexSpace(TileType.Mines, 1),
+    new HexSpace(TileType.Monasteries, 2),
+    new HexSpace(TileType.Buildings, 5),
+    new HexSpace(TileType.Buildings, 6),
     null,
     null,
   ],
   [
-    new HexTile(tileType.Mines, 3),
-    new HexTile(tileType.Monasteries, 4),
-    new HexTile(tileType.Monasteries, 1),
-    new HexTile(tileType.Buildings, 3),
+    new HexSpace(TileType.Mines, 3),
+    new HexSpace(TileType.Monasteries, 4),
+    new HexSpace(TileType.Monasteries, 1),
+    new HexSpace(TileType.Buildings, 3),
     null,
     null,
     null,
   ],
 ];
+
+export const keyTiles: (Hex | null)[] = [null, null, null];
+
+class Worker {
+  stack: Hex[];
+
+  constructor() {
+    this.stack = [];
+  }
+
+  buyWorker(worker: Hex) {
+    this.stack.push(worker);
+  }
+
+  applyWorkerPlus(die: Dice) {
+    die.value = (die.value + 1) % 6;
+  }
+
+  applyWorkerMinus(die: Dice) {
+    die.value = (die.value - 1) % 6;
+  }
+}
+
+class Dice {
+  value: number;
+
+  constructor() {
+    this.value = 0;
+  }
+
+  roll() {
+    this.value = Math.floor(Math.random() * 6 + 1);
+  }
+}
 
 export class gameFunctions {
-  static buyTileFromBoard = (giver: Depot, receiever: Depot, h: HexTile) => {
-    giver.findTile(h)?.switchHasTile();
-    receiever.hex.push(h);
+  static buyTile = (h: HexSpace, keyTiles: (Hex | null)[], i: number) => {
+    keyTiles[i] = h.hex;
+    h.removeTile();
+  };
+
+  static unsetBoard = (board: Depot[]) => {
+    for (const x of board) {
+      for (const y of x.hex) {
+        y.hex = null;
+      }
+    }
   };
 }
