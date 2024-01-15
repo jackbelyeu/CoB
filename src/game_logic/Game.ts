@@ -1,41 +1,75 @@
-import { type Hex, type LivestockHex, TileType } from '@/game_logic/hex';
+import {
+  Hex,
+  LivestockHex,
+  TileType,
+  LivestockType,
+  playerBoardOne,
+  type HexSpace,
+  keyTiles,
+  Worker,
+  Dice,
+  mainBoard,
+  type Depot,
+} from '@/game_logic/hex';
 
-class Box {
-  hexSupply: Hex[];
+export class Box {
+  shipSupply: Hex[];
+  livestockSupply: LivestockHex[];
+  discard: Hex[];
 
   constructor() {
-    this.hexSupply = [];
+    this.shipSupply = [new Hex(TileType.Ships)];
+    this.livestockSupply = [new LivestockHex(LivestockType.Sheep, 4)];
+    this.discard = [];
   }
 }
 
-class Game {
-  room: Room;
+export class Room {
+  roomCode: number;
+  players: Player[];
+  centralBoard: CentralBoard;
 
-  constructor(r: Room) {
-    this.room = r;
-  }
-}
-
-class Room {
-  players: Player;
-
-  constructor(pOne: Player) {
-    this.players = pOne;
+  constructor(roomCode: number) {
+    this.roomCode = roomCode;
+    this.players = [new Player(0), new Player(1)];
+    this.centralBoard = new CentralBoard();
   }
 }
 
 class Player {
-  foo: number;
+  board: PlayerBoard;
+  playerNumber: number;
 
-  constructor() {
-    this.foo = 0;
+  constructor(playerID: number) {
+    this.board = new PlayerBoard();
+    this.playerNumber = playerID;
   }
 }
 
-class Discard {
-  foo: Hex[];
+class PlayerBoard {
+  duchy: (HexSpace | null)[][];
+  keyTiles: (Hex | null)[];
+  dice: Dice;
+  workers: Worker;
 
   constructor() {
-    this.foo = [];
+    this.duchy = playerBoardOne;
+    this.keyTiles = keyTiles;
+    this.dice = new Dice();
+    this.workers = new Worker();
+  }
+}
+
+export class CentralBoard {
+  outerBoard: Depot[];
+  blackTiles: (Hex | null)[];
+  phaseTracker: (Hex | null)[][];
+  currPhase: (Hex | null)[];
+
+  constructor() {
+    this.outerBoard = mainBoard;
+    this.blackTiles = [];
+    this.phaseTracker = [[]];
+    this.currPhase = [];
   }
 }

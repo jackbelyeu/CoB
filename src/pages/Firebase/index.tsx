@@ -2,9 +2,9 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { getFirestore, collection, addDoc, serverTimestamp, query, onSnapshot } from 'firebase/firestore';
 import { useAuth } from 'solid-firebase';
-import { createSignal, For, Show } from 'solid-js';
+import { createSignal, For } from 'solid-js';
 import { useGlobalContext } from '@/context/GlobalContext';
-import { mainBoard, keyTiles, gameFunctions, playerBoardOne } from '@/game_logic/hex';
+import { Room } from '@/game_logic/Game';
 import styles from '@/pages/Firebase/Firebase.module.scss';
 
 const firebaseConfig = {
@@ -67,9 +67,32 @@ const postMessage = async (message: string) => {
 };
 
 const boardTester = () => {
-  console.log(mainBoard);
-  console.log(playerBoardOne);
-  console.log(keyTiles);
+  const room = new Room(0);
+  console.log(room);
+
+  return (
+    <div>
+      <For each={room.players[0].board.duchy}>
+        {(row, rowIndex) => (
+          <div>
+            <For each={row}>
+              {(cell, cellIndex) => cell != null && <button onClick={() => cell.addTile}>This is a HexSpace</button>}
+            </For>
+          </div>
+        )}
+      </For>
+      <br> </br>
+      <For each={room.centralBoard.outerBoard}>
+        {(row, rowIndex) => (
+          <div>
+            <For each={row.hex}>
+              {(cell, cellIndex) => cell != null && <button onClick={() => cell.addTile}>This is a HexSpace</button>}
+            </For>
+          </div>
+        )}
+      </For>
+    </div>
+  );
 };
 
 export const Firebase = () => {
@@ -102,26 +125,10 @@ export const Firebase = () => {
           <button onClick={() => signOutUser()}>Sign Out</button>
           <input placeholder="Enter message here" onChange={e => setMessage(e.currentTarget.value)} />
           <button onClick={() => postMessage(message())}>Send Message</button>
-
           <br />
           <button onClick={() => boardTester()}>Test the Board</button>
-          <button onClick={() => gameFunctions.unsetBoard(mainBoard)}>Test the Unset</button>
-          <button onClick={() => gameFunctions.buyTile(mainBoard[4].hex[1], keyTiles, 0)}>Test Buying Mine</button>
-
+          {boardTester()}
           <br />
-          <div>
-            <For each={playerBoardOne}>
-              {(row, rowIndex) => (
-                <div>
-                  <For each={row}>
-                    {(cell, cellIndex) =>
-                      cell != null && <button onClick={() => cell.addTile}>This is a HexSpace</button>
-                    }
-                  </For>
-                </div>
-              )}
-            </For>
-          </div>
         </>
       )}
     </div>

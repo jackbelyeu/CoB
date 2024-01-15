@@ -1,3 +1,5 @@
+import type { Box, CentralBoard } from '@/game_logic/Game';
+
 export const enum TileType {
   Buildings,
   Livestocks,
@@ -9,7 +11,7 @@ export const enum TileType {
   Workers,
 }
 
-const enum LivestockType {
+export const enum LivestockType {
   Goats,
   Pigs,
   Cows,
@@ -21,6 +23,10 @@ export class Hex {
 
   constructor(t: TileType) {
     this.type = t;
+  }
+
+  placeHexAction() {
+    console.log('placeholder');
   }
 }
 
@@ -35,7 +41,7 @@ export class LivestockHex extends Hex {
   }
 }
 
-class HexSpace {
+export class HexSpace {
   type: TileType;
   dieValue: number;
   hex: Hex | null;
@@ -60,7 +66,7 @@ class HexSpace {
   };
 }
 
-class Depot {
+export class Depot {
   hex: HexSpace[];
   good: Hex[];
 
@@ -151,7 +157,7 @@ export const playerBoardOne: (HexSpace | null)[][] = [
 
 export const keyTiles: (Hex | null)[] = [null, null, null];
 
-class Worker {
+export class Worker {
   stack: Hex[];
 
   constructor() {
@@ -171,7 +177,7 @@ class Worker {
   }
 }
 
-class Dice {
+export class Dice {
   value: number;
 
   constructor() {
@@ -184,15 +190,55 @@ class Dice {
 }
 
 export class gameFunctions {
+  static returnAndRemoveRandomFromArray = (array: Array<any>) => {
+    const index = Math.floor(Math.random() * array.length);
+    const item = array[index];
+    array.splice(index, 1);
+    return item;
+  };
+
   static buyTile = (h: HexSpace, keyTiles: (Hex | null)[], i: number) => {
     keyTiles[i] = h.hex;
     h.removeTile();
   };
 
-  static unsetBoard = (board: Depot[]) => {
-    for (const x of board) {
+  static setBoard = (board: CentralBoard, box: Box) => {
+    for (const x of board.outerBoard) {
       for (const y of x.hex) {
-        y.hex = null;
+        switch (y.type) {
+          case TileType.Ships:
+            y.hex = this.returnAndRemoveRandomFromArray(box.shipSupply);
+            break;
+          case TileType.Livestocks:
+            y.hex = this.returnAndRemoveRandomFromArray(box.livestockSupply);
+            break;
+          case TileType.Buildings:
+            console.log('placeholder');
+            break;
+          case TileType.Castles:
+            console.log('placeholder');
+            break;
+          case TileType.Mines:
+            console.log('placeholder');
+            break;
+          case TileType.Monasteries:
+            console.log('placeholder');
+            break;
+          default:
+            console.log('Invalid TileType');
+            break;
+        }
+      }
+    }
+  };
+
+  static unsetBoard = (board: CentralBoard, box: Box) => {
+    for (const x of board.outerBoard) {
+      for (const y of x.hex) {
+        if (y.hex != null) {
+          box.discard.push(y.hex);
+          y.hex = null;
+        }
       }
     }
   };
