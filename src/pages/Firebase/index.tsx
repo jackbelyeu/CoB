@@ -1,10 +1,11 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { getDatabase, ref, set } from 'firebase/database';
 import { getFirestore, collection, addDoc, serverTimestamp, query, onSnapshot } from 'firebase/firestore';
 import { useAuth } from 'solid-firebase';
 import { createSignal, For } from 'solid-js';
 import { useGlobalContext } from '@/context/GlobalContext';
-import { Room } from '@/game_logic/Game';
+import type { Room } from '@/game_logic/Game';
 import styles from '@/pages/Firebase/Firebase.module.scss';
 
 const firebaseConfig = {
@@ -18,8 +19,17 @@ const firebaseConfig = {
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
-
 const db = getFirestore(firebaseApp);
+const auth = getAuth(firebaseApp);
+const rtdb = getDatabase(firebaseApp);
+
+const addRoomToRealtimeDatabase = (userId: string, roomCode: string) => {
+  const reference = ref(rtdb, `users/${userId}`);
+
+  set(reference, {
+    roomCode,
+  });
+};
 
 const q = query(collection(db, 'messages'));
 
@@ -30,8 +40,6 @@ const unsubscribe = onSnapshot(q, querySnapshot => {
   });
   console.log('I am subscribed');
 });
-
-const auth = getAuth(firebaseApp);
 
 const registerUser = async (email: string, password: string) => {
   try {
@@ -66,10 +74,16 @@ const postMessage = async (message: string) => {
   console.log('Document written with ID: ', docRef.id);
 };
 
-const boardTester = () => {
-  const room = new Room(0);
-  console.log(room);
+const createRoom = (roomCode: string, firstPlayerId: string) => {
+  addRoomToRealtimeDatabase(firstPlayerId, roomCode);
+  console.log(roomCode, firstPlayerId);
+};
 
+const joinRoom = (roomCode: string, playerId: string) => {
+  console.log(roomCode, playerId);
+};
+
+const showRoom = (room: Room) => {
   return (
     <div>
       <For each={room.players[0].board.duchy}>
@@ -81,12 +95,14 @@ const boardTester = () => {
           </div>
         )}
       </For>
-      <br> </br>
+      <br />
       <For each={room.centralBoard.outerBoard}>
         {(row, rowIndex) => (
           <div>
             <For each={row.hex}>
-              {(cell, cellIndex) => cell != null && <button onClick={() => cell.addTile}>This is a HexSpace</button>}
+              {(cell, cellIndex) =>
+                cell != null && <button onClick={() => cell.addTile(null)}>This is a HexSpace</button>
+              }
             </For>
           </div>
         )}
@@ -97,11 +113,10 @@ const boardTester = () => {
 
 export const Firebase = () => {
   const context = useGlobalContext();
-
   const [password, setPassword] = createSignal('');
-  const state = useAuth(getAuth(firebaseApp));
-
   const [message, setMessage] = createSignal('');
+  const [roomCode, setRoomCode] = createSignal('');
+  const state = useAuth(getAuth(firebaseApp));
 
   return (
     <div class={styles.Firebase}>
@@ -125,10 +140,25 @@ export const Firebase = () => {
           <button onClick={() => signOutUser()}>Sign Out</button>
           <input placeholder="Enter message here" onChange={e => setMessage(e.currentTarget.value)} />
           <button onClick={() => postMessage(message())}>Send Message</button>
-          <br />
-          <button onClick={() => boardTester()}>Test the Board</button>
-          {boardTester()}
-          <br />
+          <input placeholder="Enter room code here" onChange={e => setRoomCode(e.currentTarget.value)} />
+          <button
+            onClick={() => {
+              if (state.data) {
+                createRoom(roomCode(), state.data.uid);
+              }
+            }}
+          >
+            Create Room
+          </button>
+          <button
+            onClick={() => {
+              if (state.data) {
+                joinRoom(roomCode(), state.data.uid);
+              }
+            }}
+          >
+            Join Room
+          </button>
         </>
       )}
     </div>

@@ -2,7 +2,6 @@ import { Route, Router } from '@solidjs/router';
 import { render } from 'solid-js/web';
 import { App } from '@/App';
 import { GlobalContextProvider } from '@/context/GlobalContext';
-import { About } from '@/pages/About';
 import { Firebase } from '@/pages/Firebase';
 import { Home } from '@/pages/Home';
 import { NotFound } from '@/pages/NotFound';
@@ -30,7 +29,6 @@ render(
     <GlobalContextProvider>
       <Router root={App}>
         <Route path="/" component={Home} />
-        <Route path="/about" component={About} />
         <Route path="/firebase" component={Firebase} />
         <Route path="*" component={NotFound} />
       </Router>

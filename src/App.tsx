@@ -9,9 +9,6 @@ export const App = (props: ParentProps) => (
       <A href="/" end>
         Home
       </A>
-      <A href="/about" end>
-        About
-      </A>
       <A href="/firebase" end>
         Firebase
       </A>

@@ -1,4 +1,4 @@
-import type { Box, CentralBoard } from '@/game_logic/Game';
+import type { Box, CentralBoard, Player } from '@/game_logic/Game';
 
 export const enum TileType {
   Buildings,
@@ -12,20 +12,37 @@ export const enum TileType {
 }
 
 export const enum LivestockType {
-  Goats,
+  Chickens,
   Pigs,
   Cows,
   Sheep,
 }
 
+export const enum BuildingType {
+  Warehouse,
+  Workshop,
+  Church,
+  Market,
+  BoardingHouse,
+  Bank,
+  TownHall,
+  Watchtower,
+}
+
 export class Hex {
   type: TileType;
+  black: boolean;
 
-  constructor(t: TileType) {
+  constructor(t: TileType, b?: boolean) {
+    if (b) {
+      this.black = b;
+    } else {
+      this.black = false;
+    }
     this.type = t;
   }
 
-  placeHexAction() {
+  placeHexAction(player: Player) {
     console.log('placeholder');
   }
 }
@@ -34,10 +51,51 @@ export class LivestockHex extends Hex {
   animal: LivestockType;
   number: number;
 
-  constructor(a: LivestockType, n: number) {
-    super(TileType.Livestocks);
+  constructor(a: LivestockType, n: number, b?: boolean) {
+    super(TileType.Livestocks, b);
     this.animal = a;
     this.number = n;
+  }
+
+  override placeHexAction(player: Player): void {
+    player.points += this.number;
+  }
+}
+
+export class BuildingHex extends Hex {
+  building: BuildingType;
+
+  constructor(bu: BuildingType, b?: boolean) {
+    super(TileType.Buildings, b);
+    this.building = bu;
+  }
+
+  override placeHexAction(player: Player): void {
+    switch (this.building) {
+      case BuildingType.Watchtower:
+        player.points += 4;
+        break;
+      case BuildingType.Bank:
+        player.board.silverlings += 2;
+        break;
+      case BuildingType.BoardingHouse:
+        player.board.workers.buyWorker();
+        player.board.workers.buyWorker();
+        player.board.workers.buyWorker();
+        player.board.workers.buyWorker();
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+export class KnowledgeHex extends Hex {
+  knowledgeNumber: number;
+
+  constructor(k: number, b?: boolean) {
+    super(TileType.Monasteries, b);
+    this.knowledgeNumber = k;
   }
 }
 
@@ -158,14 +216,14 @@ export const playerBoardOne: (HexSpace | null)[][] = [
 export const keyTiles: (Hex | null)[] = [null, null, null];
 
 export class Worker {
-  stack: Hex[];
+  amount: number;
 
   constructor() {
-    this.stack = [];
+    this.amount = 0;
   }
 
-  buyWorker(worker: Hex) {
-    this.stack.push(worker);
+  buyWorker() {
+    this.amount++;
   }
 
   applyWorkerPlus(die: Dice) {
