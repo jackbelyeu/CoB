@@ -1,4 +1,4 @@
-import type { Box, CentralBoard, Player } from '@/game_logic/Game';
+import { type Box, type CentralBoard, Player, type Room } from '@/game_logic/Game';
 
 export const enum TileType {
   Buildings,
@@ -109,19 +109,6 @@ export class HexSpace {
     this.dieValue = d;
     this.hex = null;
   }
-
-  addTile(h: Hex | null) {
-    this.hex = h;
-  }
-
-  removeTile() {
-    this.hex = null;
-  }
-
-  playTile = (keyTiles: (Hex | null)[], i: number) => {
-    this.addTile(keyTiles[i]);
-    keyTiles[i] = null;
-  };
 }
 
 export class Depot {
@@ -213,7 +200,7 @@ export const playerBoardOne: (HexSpace | null)[][] = [
   ],
 ];
 
-export const keyTiles: (Hex | null)[] = [null, null, null];
+export const keyTiles: (HexSpace | null)[] = [null, null, null];
 
 export class Worker {
   amount: number;
@@ -248,39 +235,51 @@ export class Dice {
 }
 
 export class gameFunctions {
-  static returnAndRemoveRandomFromArray = (array: Array<any>) => {
+  static returnAndRemoveRandomFromArray = (array: Array<Hex>): Hex => {
     const index = Math.floor(Math.random() * array.length);
-    const item = array[index];
+    const item: Hex = array[index];
     array.splice(index, 1);
     return item;
   };
 
-  static buyTile = (h: HexSpace, keyTiles: (Hex | null)[], i: number) => {
-    keyTiles[i] = h.hex;
-    h.removeTile();
+  static hexToString = (h: Hex | null): string => {
+    return `I am a ${h?.type} Hex`;
   };
 
-  static setBoard = (board: CentralBoard, box: Box) => {
-    for (const x of board.outerBoard) {
+  static addPlayer(room: Room, playerId: string) {
+    const containsPlayerId = room.players.some(player => player.playerId === playerId);
+    if (!containsPlayerId) {
+      room.players.push(new Player(playerId));
+    }
+    return room;
+  }
+
+  static buyTile = (h: HexSpace, keyTiles: (Hex | null)[], i: number) => {
+    keyTiles[i] = h.hex;
+    h.hex = null;
+  };
+
+  static setBoard = (room: Room) => {
+    for (const x of room.centralBoard.outerBoard) {
       for (const y of x.hex) {
         switch (y.type) {
           case TileType.Ships:
-            y.hex = this.returnAndRemoveRandomFromArray(box.shipSupply);
+            y.hex = this.returnAndRemoveRandomFromArray(room.box.shipSupply);
             break;
           case TileType.Livestocks:
-            y.hex = this.returnAndRemoveRandomFromArray(box.livestockSupply);
+            y.hex = this.returnAndRemoveRandomFromArray(room.box.livestockSupply);
             break;
           case TileType.Buildings:
-            console.log('placeholder');
+            y.hex = this.returnAndRemoveRandomFromArray(room.box.buildingSupply);
             break;
           case TileType.Castles:
-            console.log('placeholder');
+            y.hex = this.returnAndRemoveRandomFromArray(room.box.castleSupply);
             break;
           case TileType.Mines:
-            console.log('placeholder');
+            y.hex = this.returnAndRemoveRandomFromArray(room.box.mineSupply);
             break;
           case TileType.Monasteries:
-            console.log('placeholder');
+            y.hex = this.returnAndRemoveRandomFromArray(room.box.knowledgeSupply);
             break;
           default:
             console.log('Invalid TileType');
@@ -288,6 +287,7 @@ export class gameFunctions {
         }
       }
     }
+    return room;
   };
 
   static unsetBoard = (board: CentralBoard, box: Box) => {

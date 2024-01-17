@@ -1,11 +1,12 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { getDatabase, ref, set } from 'firebase/database';
+import { getDatabase, ref, set, onValue } from 'firebase/database';
 import { getFirestore, collection, addDoc, serverTimestamp, query, onSnapshot } from 'firebase/firestore';
 import { useAuth } from 'solid-firebase';
-import { createSignal, For } from 'solid-js';
+import { createSignal, For, Show } from 'solid-js';
 import { useGlobalContext } from '@/context/GlobalContext';
-import type { Room } from '@/game_logic/Game';
+import { Room, Player } from '@/game_logic/Game';
+import { gameFunctions, TileType } from '@/game_logic/hex';
 import styles from '@/pages/Firebase/Firebase.module.scss';
 
 const firebaseConfig = {
@@ -22,14 +23,6 @@ const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
 const rtdb = getDatabase(firebaseApp);
-
-const addRoomToRealtimeDatabase = (userId: string, roomCode: string) => {
-  const reference = ref(rtdb, `users/${userId}`);
-
-  set(reference, {
-    roomCode,
-  });
-};
 
 const q = query(collection(db, 'messages'));
 
@@ -74,34 +67,99 @@ const postMessage = async (message: string) => {
   console.log('Document written with ID: ', docRef.id);
 };
 
-const createRoom = (roomCode: string, firstPlayerId: string) => {
-  addRoomToRealtimeDatabase(firstPlayerId, roomCode);
-  console.log(roomCode, firstPlayerId);
+const addOrUpdateRoomToRealtimeDatabase = (room: Room) => {
+  const reference = ref(rtdb, `game/${room.roomCode}`);
+
+  set(reference, room);
 };
 
-const joinRoom = (roomCode: string, playerId: string) => {
-  console.log(roomCode, playerId);
+const getRoomFromDatabase = (roomCode: string): Promise<Room> => {
+  return new Promise((resolve, reject) => {
+    const gameReference = ref(rtdb, `game/${roomCode}`);
+    onValue(
+      gameReference,
+      snapshot => {
+        const data: Room | null = snapshot.val();
+        if (data) {
+          resolve(data);
+        } else {
+          reject(new Error('Room not found in database.'));
+        }
+      },
+      error => {
+        console.error('Error fetching room from database.', error);
+        reject(error);
+      }
+    );
+  });
 };
 
-const showRoom = (room: Room) => {
+const createRoom = (roomCode: string, pId: string) => {
+  const newRoom = new Room(roomCode, pId);
+  addOrUpdateRoomToRealtimeDatabase(newRoom);
+  return newRoom;
+};
+
+const GameUI = (props: { room: Room }) => {
+  const colorMap = {
+    null: 'gray',
+    [TileType.Ships]: 'blue',
+    [TileType.Buildings]: 'tan',
+    [TileType.Castles]: 'green',
+    [TileType.Goods]: 'gray',
+    [TileType.Livestocks]: 'lime',
+    [TileType.Mines]: 'silver',
+    [TileType.Monasteries]: 'yellow',
+    [TileType.Workers]: 'gray',
+  };
+
   return (
     <div>
-      <For each={room.players[0].board.duchy}>
-        {(row, rowIndex) => (
+      <For each={props.room.players[0].board.duchy}>
+        {row => (
           <div>
             <For each={row}>
-              {(cell, cellIndex) => cell != null && <button onClick={() => cell.addTile}>This is a HexSpace</button>}
+              {cell =>
+                cell != null && (
+                  <button onClick={() => console.log(cell.hex)} style={{ 'background-color': colorMap[cell.type] }}>
+                    {cell.dieValue}, {gameFunctions.hexToString(cell.hex)}
+                  </button>
+                )
+              }
             </For>
           </div>
         )}
       </For>
+
       <br />
-      <For each={room.centralBoard.outerBoard}>
-        {(row, rowIndex) => (
+      <br />
+
+      <For each={props.room.players}>
+        {player => (
+          <div>
+            <For each={player.board.keyTiles}>{cell => <button>KeyTile</button>}</For>
+          </div>
+        )}
+      </For>
+
+      <br />
+      <br />
+
+      <For each={props.room.centralBoard.outerBoard}>
+        {row => (
           <div>
             <For each={row.hex}>
               {(cell, cellIndex) =>
-                cell != null && <button onClick={() => cell.addTile(null)}>This is a HexSpace</button>
+                cell != null && (
+                  <button
+                    onClick={() => {
+                      console.log(cell.hex);
+                    }}
+                    style={{ 'background-color': colorMap[cell.type] }}
+                  >
+                    {cell.dieValue}, {gameFunctions.hexToString(cell.hex)}
+                  </button>
+                )
               }
             </For>
           </div>
@@ -113,10 +171,13 @@ const showRoom = (room: Room) => {
 
 export const Firebase = () => {
   const context = useGlobalContext();
+
+  const state = useAuth(getAuth(firebaseApp));
+
   const [password, setPassword] = createSignal('');
   const [message, setMessage] = createSignal('');
   const [roomCode, setRoomCode] = createSignal('');
-  const state = useAuth(getAuth(firebaseApp));
+  const [room, setRoom] = createSignal<Room>();
 
   return (
     <div class={styles.Firebase}>
@@ -142,23 +203,46 @@ export const Firebase = () => {
           <button onClick={() => postMessage(message())}>Send Message</button>
           <input placeholder="Enter room code here" onChange={e => setRoomCode(e.currentTarget.value)} />
           <button
-            onClick={() => {
+            onClick={async () => {
               if (state.data) {
-                createRoom(roomCode(), state.data.uid);
+                setRoom(await getRoomFromDatabase(createRoom(roomCode(), state.data.uid).roomCode));
               }
             }}
           >
             Create Room
           </button>
           <button
-            onClick={() => {
+            onClick={async () => {
               if (state.data) {
-                joinRoom(roomCode(), state.data.uid);
+                const newRoom = gameFunctions.addPlayer(await getRoomFromDatabase(roomCode()), state.data.uid);
+                addOrUpdateRoomToRealtimeDatabase(newRoom);
+                setRoom(newRoom);
               }
             }}
           >
             Join Room
           </button>
+          <button
+            onClick={async () => {
+              const setBoard = gameFunctions.setBoard(room()!);
+              addOrUpdateRoomToRealtimeDatabase(setBoard);
+              setRoom(await getRoomFromDatabase(setBoard.roomCode));
+            }}
+          >
+            Set Room
+          </button>
+          <button
+            onClick={async () => {
+              if (state.data) {
+                setRoom(await getRoomFromDatabase(room()?.roomCode ?? ''));
+              }
+            }}
+          >
+            Update Room
+          </button>
+          <Show when={room() != null}>
+            <GameUI room={room()!} />
+          </Show>
         </>
       )}
     </div>

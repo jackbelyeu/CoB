@@ -1,8 +1,8 @@
 import {
   Hex,
   LivestockHex,
-  type BuildingHex,
-  type KnowledgeHex,
+  BuildingHex,
+  KnowledgeHex,
   TileType,
   LivestockType,
   playerBoardOne,
@@ -12,6 +12,7 @@ import {
   Dice,
   mainBoard,
   type Depot,
+  BuildingType,
 } from '@/game_logic/hex';
 
 export class Box {
@@ -21,6 +22,7 @@ export class Box {
   castleSupply: Hex[];
   mineSupply: Hex[];
   knowledgeSupply: KnowledgeHex[];
+  blackSupply: Hex[];
   discard: Hex[];
 
   constructor() {
@@ -45,6 +47,29 @@ export class Box {
       new Hex(TileType.Ships),
       new Hex(TileType.Ships),
       new Hex(TileType.Ships),
+    ];
+    this.livestockSupply = [new LivestockHex(LivestockType.Sheep, 4), new LivestockHex(LivestockType.Sheep, 3)];
+    this.buildingSupply = [
+      new BuildingHex(BuildingType.Watchtower),
+      new BuildingHex(BuildingType.Bank),
+      new BuildingHex(BuildingType.BoardingHouse),
+      new BuildingHex(BuildingType.Church),
+    ];
+    this.castleSupply = [new Hex(TileType.Castles), new Hex(TileType.Castles), new Hex(TileType.Castles)];
+    this.mineSupply = [
+      new Hex(TileType.Mines),
+      new Hex(TileType.Mines),
+      new Hex(TileType.Mines),
+      new Hex(TileType.Mines),
+    ];
+    this.knowledgeSupply = [
+      new KnowledgeHex(1),
+      new KnowledgeHex(2),
+      new KnowledgeHex(3),
+      new KnowledgeHex(4),
+      new KnowledgeHex(5),
+    ];
+    this.blackSupply = [
       new Hex(TileType.Ships, true),
       new Hex(TileType.Ships, true),
       new Hex(TileType.Ships, true),
@@ -52,11 +77,6 @@ export class Box {
       new Hex(TileType.Ships, true),
       new Hex(TileType.Ships, true),
     ];
-    this.livestockSupply = [new LivestockHex(LivestockType.Sheep, 4)];
-    this.buildingSupply = [];
-    this.castleSupply = [];
-    this.mineSupply = [];
-    this.knowledgeSupply = [];
     this.discard = [];
   }
 }
@@ -65,11 +85,13 @@ export class Room {
   roomCode: string;
   players: Player[];
   centralBoard: CentralBoard;
+  box: Box;
 
-  constructor(roomCode: string, firstPlayerId: string) {
+  constructor(roomCode: string, playerId: string) {
     this.roomCode = roomCode;
-    this.players = [new Player(firstPlayerId)];
+    this.players = [new Player(playerId)];
     this.centralBoard = new CentralBoard();
+    this.box = new Box();
   }
 }
 
@@ -87,7 +109,7 @@ export class Player {
 
 class PlayerBoard {
   duchy: (HexSpace | null)[][];
-  keyTiles: (Hex | null)[];
+  keyTiles: (HexSpace | null)[];
   dice: Dice;
   workers: Worker;
   silverlings: number;
