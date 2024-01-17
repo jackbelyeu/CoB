@@ -1,8 +1,11 @@
 import { createEffect, createSignal, For } from 'solid-js';
-import type { Room } from '@/game_logic/Game';
+import { useGlobalContext } from '@/context/GlobalContext';
 import { gameFunctions, TileType, type HexSpace } from '@/game_logic/hex';
+import { setRoomToRealtimeDatabase, rtdb } from '@/pages/Firebase';
 
-export const GameUI = (props: { room: Room }) => {
+export const GameUI = () => {
+  const context = useGlobalContext();
+
   const typeMap = {
     null: 'gray',
     [TileType.Ships]: 'blue',
@@ -21,12 +24,15 @@ export const GameUI = (props: { room: Room }) => {
     if (hexSpaceGiver() != null && hexSpaceTaker() != null) {
       console.log('Both signals are not null');
       gameFunctions.moveTile(hexSpaceGiver()!, hexSpaceTaker()!);
+      setHexSpaceGiver(null);
+      setHexSpaceTaker(null);
+      setRoomToRealtimeDatabase(context.room()!, rtdb);
     }
   });
 
   return (
     <div>
-      <For each={props.room.players[0].board.duchy}>
+      <For each={context.room()!.players[0].board.duchy}>
         {row => (
           <div>
             <For each={row}>
@@ -39,7 +45,7 @@ export const GameUI = (props: { room: Room }) => {
                     }}
                     style={{ 'background-color': typeMap[cell.type] }}
                   >
-                    {cell.dieValue}, {gameFunctions.hexToString(cell.hex)}
+                    {cell.dieValue}, {gameFunctions.hasHex(cell)}
                   </button>
                 )
               }
@@ -51,7 +57,7 @@ export const GameUI = (props: { room: Room }) => {
       <br />
       <br />
 
-      <For each={props.room.players}>
+      <For each={context.room()!.players}>
         {player => (
           <div>
             <For each={player.board.keyTiles}>{cell => <button>KeyTile</button>}</For>
@@ -62,10 +68,10 @@ export const GameUI = (props: { room: Room }) => {
       <br />
       <br />
 
-      <For each={props.room.centralBoard.outerBoard}>
+      <For each={context.room()!.centralBoard.outerBoard}>
         {row => (
           <div>
-            <For each={row.hex}>
+            <For each={row.hexSpace}>
               {(cell, cellIndex) =>
                 cell != null && (
                   <button
@@ -75,7 +81,7 @@ export const GameUI = (props: { room: Room }) => {
                     }}
                     style={{ 'background-color': typeMap[cell.type] }}
                   >
-                    {cell.dieValue}, {gameFunctions.hexToString(cell.hex)}
+                    {cell.dieValue}, {gameFunctions.hasHex(cell)}
                   </button>
                 )
               }
@@ -94,7 +100,7 @@ export const GameUI = (props: { room: Room }) => {
       </button>
       <button
         onClick={() => {
-          gameFunctions.setBoard(props.room);
+          gameFunctions.setBoard(context.room()!);
         }}
       >
         Set Board

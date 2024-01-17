@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { getDatabase, ref, set, onValue } from 'firebase/database';
+import { getDatabase, ref, set, onValue, type Database } from 'firebase/database';
 import { getFirestore, collection, addDoc, serverTimestamp, query, onSnapshot } from 'firebase/firestore';
 import { useAuth } from 'solid-firebase';
 import { createSignal, Show } from 'solid-js';
@@ -23,7 +23,7 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
-const rtdb = getDatabase(firebaseApp);
+export const rtdb = getDatabase(firebaseApp);
 
 const q = query(collection(db, 'messages'));
 const unsubscribe = onSnapshot(q, querySnapshot => {
@@ -67,8 +67,8 @@ const postMessage = async (message: string) => {
   console.log('Document written with ID: ', docRef.id);
 };
 
-const setRoomToRealtimeDatabase = (room: Room) => {
-  const reference = ref(rtdb, `game/${room.roomCode}`);
+export const setRoomToRealtimeDatabase = (room: Room, db: Database) => {
+  const reference = ref(db, `game/${room.roomCode}`);
 
   set(reference, room);
 };
@@ -94,16 +94,16 @@ const getRoomFromDatabase = (roomCode: string): Promise<Room> => {
   });
 };
 
-const createRoom = (roomCode: string, pId: string) => {
+const createRoom = (roomCode: string, pId: string, db: Database) => {
   const newRoom = new Room(roomCode, pId);
   console.log(`Room Created with Code ${newRoom.roomCode}`);
-  setRoomToRealtimeDatabase(newRoom);
+  setRoomToRealtimeDatabase(newRoom, db);
 };
 
-const joinRoom = async (roomCode: string, pId: string) => {
+const joinRoom = async (roomCode: string, pId: string, db: Database) => {
   const room = gameFunctions.addPlayer(await getRoomFromDatabase(roomCode), pId);
   console.log(`Room Joined with Code ${room.roomCode}`);
-  setRoomToRealtimeDatabase(room);
+  setRoomToRealtimeDatabase(room, db);
   return room;
 };
 
@@ -115,8 +115,6 @@ export const Firebase = () => {
   const [password, setPassword] = createSignal('');
   const [message, setMessage] = createSignal('');
   const [roomCode, setRoomCode] = createSignal('');
-
-  const [room, setRoom] = createSignal<Room>();
 
   return (
     <div class={styles.Firebase}>
@@ -144,8 +142,8 @@ export const Firebase = () => {
           <button
             onClick={async () => {
               if (state.data) {
-                createRoom(roomCode(), state.data.uid);
-                setRoom(await joinRoom(roomCode(), state.data.uid));
+                createRoom(roomCode(), state.data.uid, rtdb);
+                context.setRoom(await joinRoom(roomCode(), state.data.uid, rtdb));
               }
             }}
           >
@@ -154,14 +152,14 @@ export const Firebase = () => {
           <button
             onClick={async () => {
               if (state.data) {
-                setRoom(await joinRoom(roomCode(), state.data.uid));
+                context.setRoom(await joinRoom(roomCode(), state.data.uid, rtdb));
               }
             }}
           >
             Join Room
           </button>
-          <Show when={room() != null}>
-            <GameUI room={room()!} />
+          <Show when={context.room() != null}>
+            <GameUI />
           </Show>
         </>
       )}

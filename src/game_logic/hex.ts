@@ -85,11 +85,11 @@ export class HexSpace {
 }
 
 export class Depot {
-  hex: HexSpace[];
+  hexSpace: HexSpace[];
   good: Hex[];
 
   constructor(hexOne: TileType, hexTwo: TileType, n: number) {
-    this.hex = [new HexSpace(hexOne, n), new HexSpace(hexTwo, n)];
+    this.hexSpace = [new HexSpace(hexOne, n), new HexSpace(hexTwo, n)];
     this.good = [];
   }
 }
@@ -187,6 +187,13 @@ export class gameFunctions {
     return item;
   };
 
+  static hasHex = (h: HexSpace): boolean => {
+    if (h.hex != null) {
+      return true;
+    }
+    return false;
+  };
+
   static hexToString = (h: Hex | null): string => {
     let result = '';
     if (h) {
@@ -204,13 +211,17 @@ export class gameFunctions {
   }
 
   static moveTile = (h: HexSpace, k: HexSpace) => {
-    k.hex = h.hex;
-    h.hex = null;
+    if (h.hex == null) {
+      console.log('Empty Space');
+    } else {
+      k.hex = h.hex;
+      h.hex = null;
+    }
   };
 
   static setBoard = (room: Room) => {
     for (const x of room.centralBoard.outerBoard) {
-      for (const y of x.hex) {
+      for (const y of x.hexSpace) {
         switch (y.type) {
           case TileType.Ships:
             y.hex = this.returnAndRemoveRandomFromArray(room.box.shipSupply);
@@ -241,7 +252,7 @@ export class gameFunctions {
 
   static unsetBoard = (board: CentralBoard, box: Box) => {
     for (const x of board.outerBoard) {
-      for (const y of x.hex) {
+      for (const y of x.hexSpace) {
         if (y.hex != null) {
           box.discard.push(y.hex);
           y.hex = null;
