@@ -41,10 +41,6 @@ export class Hex {
     }
     this.type = t;
   }
-
-  placeHexAction(player: Player) {
-    console.log('placeholder');
-  }
 }
 
 export class LivestockHex extends Hex {
@@ -56,10 +52,6 @@ export class LivestockHex extends Hex {
     this.animal = a;
     this.number = n;
   }
-
-  override placeHexAction(player: Player): void {
-    player.points += this.number;
-  }
 }
 
 export class BuildingHex extends Hex {
@@ -68,25 +60,6 @@ export class BuildingHex extends Hex {
   constructor(bu: BuildingType, b?: boolean) {
     super(TileType.Buildings, b);
     this.building = bu;
-  }
-
-  override placeHexAction(player: Player): void {
-    switch (this.building) {
-      case BuildingType.Watchtower:
-        player.points += 4;
-        break;
-      case BuildingType.Bank:
-        player.board.silverlings += 2;
-        break;
-      case BuildingType.BoardingHouse:
-        player.board.workers.buyWorker();
-        player.board.workers.buyWorker();
-        player.board.workers.buyWorker();
-        player.board.workers.buyWorker();
-        break;
-      default:
-        break;
-    }
   }
 }
 
@@ -118,10 +91,6 @@ export class Depot {
   constructor(hexOne: TileType, hexTwo: TileType, n: number) {
     this.hex = [new HexSpace(hexOne, n), new HexSpace(hexTwo, n)];
     this.good = [];
-  }
-
-  addGood(good: Hex) {
-    this.good.push(good);
   }
 }
 
@@ -202,35 +171,11 @@ export const playerBoardOne: (HexSpace | null)[][] = [
 
 export const keyTiles: (HexSpace | null)[] = [null, null, null];
 
-export class Worker {
-  amount: number;
-
-  constructor() {
-    this.amount = 0;
-  }
-
-  buyWorker() {
-    this.amount++;
-  }
-
-  applyWorkerPlus(die: Dice) {
-    die.value = (die.value + 1) % 6;
-  }
-
-  applyWorkerMinus(die: Dice) {
-    die.value = (die.value - 1) % 6;
-  }
-}
-
 export class Dice {
   value: number;
 
   constructor() {
     this.value = 0;
-  }
-
-  roll() {
-    this.value = Math.floor(Math.random() * 6 + 1);
   }
 }
 
@@ -243,7 +188,11 @@ export class gameFunctions {
   };
 
   static hexToString = (h: Hex | null): string => {
-    return `I am a ${h?.type} Hex`;
+    let result = '';
+    if (h) {
+      result = `I am a ${h.type} Hex`;
+    }
+    return result;
   };
 
   static addPlayer(room: Room, playerId: string) {
@@ -254,8 +203,8 @@ export class gameFunctions {
     return room;
   }
 
-  static buyTile = (h: HexSpace, keyTiles: (Hex | null)[], i: number) => {
-    keyTiles[i] = h.hex;
+  static moveTile = (h: HexSpace, k: HexSpace) => {
+    k.hex = h.hex;
     h.hex = null;
   };
 

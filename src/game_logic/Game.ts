@@ -8,7 +8,6 @@ import {
   playerBoardOne,
   type HexSpace,
   keyTiles,
-  Worker,
   Dice,
   mainBoard,
   type Depot,
@@ -110,16 +109,18 @@ export class Player {
 class PlayerBoard {
   duchy: (HexSpace | null)[][];
   keyTiles: (HexSpace | null)[];
-  dice: Dice;
-  workers: Worker;
+  dice: Dice[];
+  workers: number;
   silverlings: number;
+  goods: (Hex | null)[];
 
   constructor() {
     this.duchy = playerBoardOne;
     this.keyTiles = keyTiles;
-    this.dice = new Dice();
-    this.workers = new Worker();
+    this.dice = [new Dice(), new Dice()];
+    this.workers = 0;
     this.silverlings = 1;
+    this.goods = [];
   }
 }
 
