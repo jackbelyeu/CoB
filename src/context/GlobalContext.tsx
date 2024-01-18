@@ -1,11 +1,12 @@
 import { type ParentProps, createSignal, createContext, useContext } from 'solid-js';
+import { Game } from '@/game_logic/Game';
 
 // Define Global Context
 const globalContext = (props: ParentProps) => {
   const [email, setEmail] = createSignal<string>('');
-  // const [room, setRoom] = createStore<Room | any>({});
+  const [game, setGame] = createSignal<Game>(new Game());
 
-  return { email, setEmail };
+  return { email, setEmail, game, setGame };
 };
 
 // Initialize Global Context

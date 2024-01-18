@@ -2,9 +2,10 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { getDatabase, ref, set, onValue } from 'firebase/database';
 import { useAuth } from 'solid-firebase';
-import { createSignal } from 'solid-js';
+import { Show, createSignal } from 'solid-js';
 import { useGlobalContext } from '@/context/GlobalContext';
 import { Game } from '@/game_logic/Game';
+import { GameUI } from '@/game_logic/GameUI';
 import styles from '@/pages/Firebase/Firebase.module.scss';
 
 const firebaseConfig = {
@@ -42,7 +43,6 @@ const signInUser = async (email: string, password: string) => {
 };
 
 const signOutUser = () => {
-  // unsubscribe();
   signOut(auth);
 };
 
@@ -62,7 +62,7 @@ const createSession = () => {
   set(reference, new Game());
 };
 
-const attachListener = (sessionId: string) => {
+const attachListener = (sessionId: string): Promise<Game> => {
   return new Promise((resolve, reject) => {
     const sessionReference = ref(db, `session/${sessionId}`);
     onValue(
@@ -84,9 +84,9 @@ const attachListener = (sessionId: string) => {
   });
 };
 
-const updateSession = (sessionId: string) => {
+const updateSession = (sessionId: string, game: Game) => {
   const reference = ref(db, `session/${sessionId}`);
-  set(reference, 'goodbye');
+  set(reference, game);
 };
 
 export const Firebase = () => {
@@ -126,19 +126,23 @@ export const Firebase = () => {
             Create Session
           </button>
           <button
-            onClick={() => {
-              attachListener(sessionId());
+            onClick={async () => {
+              context.setGame(await attachListener(sessionId()));
             }}
           >
             Join Session
           </button>
           <button
             onClick={() => {
-              updateSession(sessionId());
+              updateSession(sessionId(), context.game());
             }}
           >
             Update Session
           </button>
+
+          <Show when={context.game()}>
+            <GameUI />
+          </Show>
         </>
       )}
     </div>
