@@ -1,13 +1,10 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { getDatabase, ref, set, onValue, type Database } from 'firebase/database';
-import { getFirestore, collection, addDoc, serverTimestamp, query, onSnapshot } from 'firebase/firestore';
+import { getDatabase, ref, set, onValue } from 'firebase/database';
 import { useAuth } from 'solid-firebase';
-import { createSignal, Show } from 'solid-js';
+import { createSignal } from 'solid-js';
 import { useGlobalContext } from '@/context/GlobalContext';
-import { Room } from '@/game_logic/Game';
-import { GameUI } from '@/game_logic/gameUI';
-import { gameFunctions } from '@/game_logic/hex';
+import { Game } from '@/game_logic/Game';
 import styles from '@/pages/Firebase/Firebase.module.scss';
 
 const firebaseConfig = {
@@ -22,17 +19,7 @@ const firebaseConfig = {
 
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
-const db = getFirestore(firebaseApp);
-export const rtdb = getDatabase(firebaseApp);
-
-const q = query(collection(db, 'messages'));
-const unsubscribe = onSnapshot(q, querySnapshot => {
-  const messages: string[] = [];
-  querySnapshot.forEach(doc => {
-    messages.push(doc.data().text);
-  });
-  console.log('I am subscribed');
-});
+const db = getDatabase(firebaseApp);
 
 const registerUser = async (email: string, password: string) => {
   try {
@@ -55,56 +42,51 @@ const signInUser = async (email: string, password: string) => {
 };
 
 const signOutUser = () => {
-  unsubscribe();
+  // unsubscribe();
   signOut(auth);
 };
 
-const postMessage = async (message: string) => {
-  const docRef = await addDoc(collection(db, 'messages'), {
-    createdAt: serverTimestamp(),
-    text: message,
-  });
-  console.log('Document written with ID: ', docRef.id);
+const generateSessionId = () => {
+  const possibleChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+  let sessionId = '';
+  for (let j = 0; j < 5; j++) {
+    sessionId += possibleChars.charAt(Math.floor(Math.random() * possibleChars.length));
+  }
+  return sessionId;
 };
 
-export const setRoomToRealtimeDatabase = (room: Room, db: Database) => {
-  const reference = ref(db, `game/${room.roomCode}`);
-
-  set(reference, room);
+const createSession = () => {
+  const sessionId = generateSessionId();
+  const reference = ref(db, `session/${sessionId}`);
+  console.log(sessionId);
+  set(reference, new Game());
 };
 
-const getRoomFromDatabase = (roomCode: string): Promise<Room> => {
+const attachListener = (sessionId: string) => {
   return new Promise((resolve, reject) => {
-    const gameReference = ref(rtdb, `game/${roomCode}`);
+    const sessionReference = ref(db, `session/${sessionId}`);
     onValue(
-      gameReference,
+      sessionReference,
       snapshot => {
-        const data: Room | null = snapshot.val();
+        const data = snapshot.val();
         if (data) {
+          console.log(data);
           resolve(data);
         } else {
-          reject(new Error('Room not found in database.'));
+          reject(new Error('Data not found in database.'));
         }
       },
       error => {
-        console.error('Error fetching room from database.', error);
+        console.error('Error fetching data from database.', error);
         reject(error);
       }
     );
   });
 };
 
-const createRoom = (roomCode: string, pId: string, db: Database) => {
-  const newRoom = new Room(roomCode, pId);
-  console.log(`Room Created with Code ${newRoom.roomCode}`);
-  setRoomToRealtimeDatabase(newRoom, db);
-};
-
-const joinRoom = async (roomCode: string, pId: string, db: Database) => {
-  const room = gameFunctions.addPlayer(await getRoomFromDatabase(roomCode), pId);
-  console.log(`Room Joined with Code ${room.roomCode}`);
-  setRoomToRealtimeDatabase(room, db);
-  return room;
+const updateSession = (sessionId: string) => {
+  const reference = ref(db, `session/${sessionId}`);
+  set(reference, 'goodbye');
 };
 
 export const Firebase = () => {
@@ -113,8 +95,7 @@ export const Firebase = () => {
   const state = useAuth(getAuth(firebaseApp));
 
   const [password, setPassword] = createSignal('');
-  const [message, setMessage] = createSignal('');
-  const [roomCode, setRoomCode] = createSignal('');
+  const [sessionId, setSessionId] = createSignal('');
 
   return (
     <div class={styles.Firebase}>
@@ -136,31 +117,28 @@ export const Firebase = () => {
       ) : (
         <>
           <button onClick={() => signOutUser()}>Sign Out</button>
-          <input placeholder="Enter message here" onChange={e => setMessage(e.currentTarget.value)} />
-          <button onClick={() => postMessage(message())}>Send Message</button>
-          <input placeholder="Enter room code here" onChange={e => setRoomCode(e.currentTarget.value)} />
+          <input placeholder="Enter session id here" onChange={e => setSessionId(e.currentTarget.value)} />
           <button
-            onClick={async () => {
-              if (state.data) {
-                createRoom(roomCode(), state.data.uid, rtdb);
-                context.setRoom(await joinRoom(roomCode(), state.data.uid, rtdb));
-              }
+            onClick={() => {
+              createSession();
             }}
           >
-            Create Room
+            Create Session
           </button>
           <button
-            onClick={async () => {
-              if (state.data) {
-                context.setRoom(await joinRoom(roomCode(), state.data.uid, rtdb));
-              }
+            onClick={() => {
+              attachListener(sessionId());
             }}
           >
-            Join Room
+            Join Session
           </button>
-          <Show when={context.room() != null}>
-            <GameUI />
-          </Show>
+          <button
+            onClick={() => {
+              updateSession(sessionId());
+            }}
+          >
+            Update Session
+          </button>
         </>
       )}
     </div>
