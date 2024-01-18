@@ -1,7 +1,7 @@
-# Solid Boilerplate
+# Castles of Burgundy
 
-###### **Solid Boilerplate** - _qeleb_
-Solid Boilerplate
+###### **Castles of Burgundy** - _Jack Belyeu_
+Castles of Burgundy
 
 ---
 <details open><summary><h2>Getting Started</h2></summary>

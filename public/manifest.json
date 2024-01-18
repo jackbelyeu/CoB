@@ -1,11 +1,11 @@
 {
-  "name": "Example Title Here",
-  "short_name": "Short Title",
+  "name": "Castles of Burgundy",
+  "short_name": "CoB",
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#000000",
-  "description": "Description Here",
+  "description": "Castles of Burgundy",
   "icons": [
     {
       "src": "icon16.png",

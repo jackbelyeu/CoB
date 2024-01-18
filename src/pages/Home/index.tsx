@@ -26,7 +26,7 @@ export const Home = () => {
       </h3>
       <br />
       <br />
-      made by qeleb
+      made by Jack Belyeu
     </div>
   );
 };
