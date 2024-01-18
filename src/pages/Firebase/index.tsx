@@ -96,6 +96,7 @@ export const Firebase = () => {
 
   const [password, setPassword] = createSignal('');
   const [sessionId, setSessionId] = createSignal('');
+  const [showGameUI, setShowGameUI] = createSignal<boolean>(false);
 
   return (
     <div class={styles.Firebase}>
@@ -128,6 +129,7 @@ export const Firebase = () => {
           <button
             onClick={async () => {
               context.setGame(await attachListener(sessionId()));
+              setShowGameUI(true);
             }}
           >
             Join Session
@@ -140,7 +142,7 @@ export const Firebase = () => {
             Update Session
           </button>
 
-          <Show when={context.game()}>
+          <Show when={showGameUI()}>
             <GameUI />
           </Show>
         </>

@@ -1,7 +1,12 @@
-import { TileType, type HexSpace } from '@/game_logic/Hex';
+import type { Game } from '@/game_logic/Game';
+import { TileType, type HexSpace, type Hex } from '@/game_logic/Hex';
 
 export const hexSpaceToString = (hexSpace: HexSpace) => {
   return `I am a ${hexSpace.type} type HexSpace`;
+};
+
+export const hexToString = (hex: Hex) => {
+  return `I am a ${hex.type} type Hex`;
 };
 
 export const hexSpaceToColor = (hexSpace: HexSpace) => {
@@ -39,4 +44,48 @@ export const hexSpaceToColor = (hexSpace: HexSpace) => {
   }
 
   return color;
+};
+
+const randomlyPickAndRemoveItemFromArray = (array: Array<any>) => {
+  const randomIndex = Math.floor(Math.random() * array.length);
+  const item = array[randomIndex];
+  array.splice(randomIndex, 1);
+  return item;
+};
+
+export const initBoard = (game: Game) => {
+  for (const x of game.gameBoard.depots) {
+    for (const y of x) {
+      switch (y.type) {
+        case TileType.Ships:
+          y.hex = randomlyPickAndRemoveItemFromArray(game.box.shipSupply);
+          break;
+        case TileType.Livestocks:
+          y.hex = randomlyPickAndRemoveItemFromArray(game.box.livestockSupply);
+          break;
+        case TileType.Buildings:
+          y.hex = randomlyPickAndRemoveItemFromArray(game.box.buildingSupply);
+          break;
+        case TileType.Castles:
+          y.hex = randomlyPickAndRemoveItemFromArray(game.box.castleSupply);
+          break;
+        case TileType.Mines:
+          y.hex = randomlyPickAndRemoveItemFromArray(game.box.mineSupply);
+          break;
+        case TileType.Monasteries:
+          y.hex = randomlyPickAndRemoveItemFromArray(game.box.knowledgeSupply);
+          break;
+        default:
+          console.log('Invalid TileType');
+          break;
+      }
+    }
+  }
+  return game;
+};
+
+export const swapHexBetweenSpaces = (hexSpaceOne: HexSpace, hexSpaceTwo: HexSpace) => {
+  const temp = hexSpaceOne.hex;
+  hexSpaceOne.hex = hexSpaceTwo.hex;
+  hexSpaceTwo.hex = temp;
 };
