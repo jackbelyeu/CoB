@@ -30,13 +30,14 @@
   },
   "scripts": {
     "dev": "vite",
-    "preview": "vite preview",
+    "preview": "firebase serve",
     "build": "vite build",
     "build:analyze": "ANALYZE=true && vite build",
     "test": "vitest run --coverage",
     "test:ui": "vitest --coverage --ui",
     "lint": "eslint src && stylelint src/**/*.scss",
     "lint:fix": "eslint --fix src && stylelint --fix src/**/*.scss",
+    "deploy": "firebase deploy --only hosting",
     "preinstall": "npx only-allow yarn",
     "postinstall": "husky install"
   },

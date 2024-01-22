@@ -36,7 +36,8 @@ yarn-error.log*
 # Dist
 dist
 
-# Cloud Functions Dist & node_modules
+# Firebase
+.firebase
 functions/lib
 functions/node_modules
 
