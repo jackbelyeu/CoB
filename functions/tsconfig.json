@@ -1,15 +1,31 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
+    /* Input */
+    "moduleResolution": "Node16",
+    "skipLibCheck": true,
+
+    /* Output */
     "outDir": "lib",
     "sourceMap": true,
+    "module": "Node16",
+    "target": "ES2021",
+
+    /* Strict */
     "strict": true,
-    "target": "es2017"
+    /*"exactOptionalPropertyTypes": true,*/
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    /*"noUncheckedIndexedAccess": true,*/
+    "forceConsistentCasingInFileNames": true,
+
+    /* Support for JSON, synthetic default imports, & experimental decorators */
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+
+    /* Path Aliases */
+    "paths": { "@/*": ["./src/*"] },
   },
-  "compileOnSave": true,
-  "include": [
-    "src"
-  ]
+  "include": ["src"],
 }

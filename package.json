@@ -90,5 +90,8 @@
   "resolutions": {
     "svgo": "^3.2.0"
   },
+  "workspaces": [
+    "functions"
+  ],
   "packageManager": "yarn@3.7.0"
 }

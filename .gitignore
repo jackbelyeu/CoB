@@ -36,6 +36,10 @@ yarn-error.log*
 # Dist
 dist
 
+# Cloud Functions Dist & node_modules
+functions/lib
+functions/node_modules
+
 # Coverage
 coverage
 *.lcov
