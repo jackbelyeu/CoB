@@ -42,10 +42,6 @@ const signInUser = async (email: string, password: string) => {
   }
 };
 
-const signOutUser = () => {
-  signOut(auth);
-};
-
 const generateSessionId = () => {
   const possibleChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
   let sessionId = '';
@@ -107,25 +103,13 @@ export const Firebase = () => {
           <input placeholder="Enter email here" onChange={e => context.setEmail(e.currentTarget.value)} />
           <input placeholder="Enter password here" onChange={e => setPassword(e.currentTarget.value)} />
           <button onClick={() => registerUser(context.email(), password())}>Register</button>
-          <button
-            onClick={() => {
-              signInUser(context.email(), password());
-            }}
-          >
-            Sign In
-          </button>
+          <button onClick={() => signInUser(context.email(), password())}>Sign In</button>
         </>
       ) : (
         <>
-          <button onClick={() => signOutUser()}>Sign Out</button>
+          <button onClick={() => signOut(auth)}>Sign Out</button>
           <input placeholder="Enter session id here" onChange={e => setSessionId(e.currentTarget.value)} />
-          <button
-            onClick={() => {
-              createSession();
-            }}
-          >
-            Create Session
-          </button>
+          <button onClick={() => createSession()}>Create Session</button>
           <button
             onClick={async () => {
               context.setGame(await attachListener(sessionId()));
@@ -134,13 +118,7 @@ export const Firebase = () => {
           >
             Join Session
           </button>
-          <button
-            onClick={() => {
-              updateSession(sessionId(), context.game());
-            }}
-          >
-            Update Session
-          </button>
+          <button onClick={() => updateSession(sessionId(), context.game())}>Update Session</button>
 
           <Show when={showGameUI()}>
             <GameUI />
