@@ -45,9 +45,7 @@ export const GameUI = () => {
               {cell =>
                 cell != null && (
                   <button
-                    onClick={() => {
-                      swapHexBetweenSpaces(cell, tileToBuy());
-                    }}
+                    onClick={() => swapHexBetweenSpaces(cell, tileToBuy())}
                     style={{ 'background-color': hexSpaceToColor(cell) }}
                   >
                     {hexSpaceToString(cell)},{hexToString(cell.hex)}

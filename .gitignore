@@ -36,6 +36,11 @@ yarn-error.log*
 # Dist
 dist
 
+# Firebase
+.firebase
+functions/lib
+functions/node_modules
+
 # Coverage
 coverage
 *.lcov
