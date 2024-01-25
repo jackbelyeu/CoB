@@ -43,8 +43,8 @@
   },
   "devDependencies": {
     "@solidjs/testing-library": "^0.8.5",
-    "@testing-library/jest-dom": "^6.2.1",
-    "@types/node": "^20.11.5",
+    "@testing-library/jest-dom": "^6.3.0",
+    "@types/node": "^20.11.6",
     "@typescript-eslint/eslint-plugin": "^6.19.1",
     "@typescript-eslint/parser": "^6.19.1",
     "@vitest/coverage-v8": "^1.2.1",
@@ -59,6 +59,7 @@
     "eslint-plugin-vitest": "^0.3.20",
     "husky": "^8.0.3",
     "jsdom": "^24.0.0",
+    "lightningcss": "^1.23.0",
     "lint-staged": "^15.2.0",
     "miragejs": "^0.1.48",
     "postcss": "^8.4.33",
@@ -77,15 +78,15 @@
     "vite-plugin-html": "^3.2.2",
     "vite-plugin-optimize-css-modules": "^1.0.6",
     "vite-plugin-sass-dts": "^1.3.17",
-    "vite-plugin-solid": "^2.8.3",
+    "vite-plugin-solid": "2.8.2",
     "vite-plugin-svgo": "^1.4.0",
     "vitest": "^1.2.1"
   },
   "dependencies": {
-    "@solidjs/router": "^0.10.9",
+    "@solidjs/router": "^0.10.10",
     "firebase": "^10.7.2",
     "solid-firebase": "^0.3.0",
-    "solid-js": "^1.8.11",
+    "solid-js": "^1.8.12",
     "solidjs-use": "^2.3.0"
   },
   "resolutions": {
