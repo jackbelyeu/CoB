@@ -56,8 +56,6 @@ export const GameUI = () => {
           </div>
         )}
       </For>
-
-      <button onClick={() => context.setGame(initBoard(context.game()))}>Initialize Board</button>
     </div>
   );
 };

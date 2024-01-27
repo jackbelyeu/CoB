@@ -5,6 +5,7 @@ import { useAuth } from 'solid-firebase';
 import { Show, createSignal } from 'solid-js';
 import { useGlobalContext } from '@/context/GlobalContext';
 import { Game } from '@/game_logic/Game';
+import { initBoard } from '@/game_logic/GameFunctions';
 import { GameUI } from '@/game_logic/GameUI';
 import styles from '@/pages/Firebase/Firebase.module.scss';
 
@@ -52,10 +53,11 @@ const generateSessionId = () => {
 };
 
 const createSession = () => {
+  const game = new Game();
   const sessionId = generateSessionId();
   const reference = ref(db, `session/${sessionId}`);
   console.log(sessionId);
-  set(reference, new Game());
+  set(reference, initBoard(game));
 };
 
 const attachListener = (sessionId: string): Promise<Game> => {
@@ -119,6 +121,8 @@ export const Firebase = () => {
             Join Session
           </button>
           <button onClick={() => updateSession(sessionId(), context.game())}>Update Session</button>
+
+          <button onClick={() => console.log(context.game())}>Print Current Room</button>
 
           <Show when={showGameUI()}>
             <GameUI />
