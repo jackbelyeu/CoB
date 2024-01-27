@@ -56,6 +56,9 @@ export const GameUI = () => {
           </div>
         )}
       </For>
+
+      <button onClick={() => initBoard(context.game())}>Set/Reset Board</button>
+      <button onClick={() => console.log(context.game().box.discard)}>console log discard</button>
     </div>
   );
 };

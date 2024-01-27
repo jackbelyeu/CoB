@@ -56,6 +56,9 @@ const randomlyPickAndRemoveItemFromArray = (array: Array<any>) => {
 export const initBoard = (game: Game) => {
   for (const x of game.gameBoard.depots) {
     for (const y of x) {
+      if (y.hex.type !== TileType.Empty) {
+        game.box.discard.push(y.hex);
+      }
       switch (y.type) {
         case TileType.Ships:
           y.hex = randomlyPickAndRemoveItemFromArray(game.box.shipSupply);
