@@ -184,11 +184,13 @@ export class Game {
   gameBoard: GameBoard;
   playerBoard: PlayerBoard;
   box: Box;
+  players: string[];
 
   constructor() {
     this.gameBoard = new GameBoard();
     this.playerBoard = new PlayerBoard();
     this.box = new Box();
+    this.players = [];
   }
 }
 

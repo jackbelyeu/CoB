@@ -52,12 +52,14 @@ const generateSessionId = () => {
   return sessionId;
 };
 
-const createSession = () => {
-  const game = new Game();
+const createSession = (playerId: string) => {
+  let game = new Game();
+  game = initBoard(game);
+  game = addPlayer(game, playerId);
   const sessionId = generateSessionId();
   const reference = ref(db, `session/${sessionId}`);
   console.log(sessionId);
-  set(reference, initBoard(game));
+  set(reference, game);
 };
 
 const attachListener = (sessionId: string): Promise<Game> => {
@@ -87,6 +89,14 @@ const updateSession = (sessionId: string, game: Game) => {
   set(reference, game);
 };
 
+const addPlayer = (game: Game, playerId: string) => {
+  if (!game.players.includes(playerId)) {
+    game.players.push(playerId);
+  }
+
+  return game;
+};
+
 export const Firebase = () => {
   const context = useGlobalContext();
 
@@ -111,7 +121,7 @@ export const Firebase = () => {
         <>
           <button onClick={() => signOut(auth)}>Sign Out</button>
           <input placeholder="Enter session id here" onChange={e => setSessionId(e.currentTarget.value)} />
-          <button onClick={() => createSession()}>Create Session</button>
+          <button onClick={() => createSession(state.data!.uid)}>Create Session</button>
           <button
             onClick={async () => {
               context.setGame(await attachListener(sessionId()));
@@ -123,6 +133,7 @@ export const Firebase = () => {
           <button onClick={() => updateSession(sessionId(), context.game())}>Update Session</button>
 
           <button onClick={() => console.log(context.game())}>Print Current Room</button>
+          <button onClick={() => context.setGame(addPlayer(context.game(), state.data!.uid))}>Add Player</button>
 
           <Show when={showGameUI()}>
             <GameUI />

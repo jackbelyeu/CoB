@@ -38,20 +38,26 @@ export const GameUI = () => {
 
       <br />
 
-      <For each={context.game().playerBoard.estate}>
-        {row => (
+      <For each={context.game().players}>
+        {player => (
           <div>
-            <For each={row}>
-              {cell =>
-                cell != null && (
-                  <button
-                    onClick={() => swapHexBetweenSpaces(cell, tileToBuy())}
-                    style={{ 'background-color': hexSpaceToColor(cell) }}
-                  >
-                    {hexSpaceToString(cell)},{hexToString(cell.hex)}
-                  </button>
-                )
-              }
+            <For each={context.game().playerBoard.estate}>
+              {row => (
+                <div>
+                  <For each={row}>
+                    {cell =>
+                      cell != null && (
+                        <button
+                          onClick={() => swapHexBetweenSpaces(cell, tileToBuy())}
+                          style={{ 'background-color': hexSpaceToColor(cell) }}
+                        >
+                          {hexSpaceToString(cell)},{hexToString(cell.hex)}
+                        </button>
+                      )
+                    }
+                  </For>
+                </div>
+              )}
             </For>
           </div>
         )}
