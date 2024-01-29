@@ -40,6 +40,7 @@ dist
 .firebase
 functions/lib
 functions/node_modules
+functions/serviceAccountKey.json
 
 # Coverage
 coverage

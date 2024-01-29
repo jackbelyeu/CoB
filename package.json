@@ -37,7 +37,8 @@
     "test:ui": "vitest --coverage --ui",
     "lint": "eslint src && stylelint src/**/*.scss",
     "lint:fix": "eslint --fix src && stylelint --fix src/**/*.scss",
-    "deploy": "firebase deploy --only hosting",
+    "deploy": "firebase deploy",
+    "deploy:functions": "firebase deploy --only functions",
     "preinstall": "npx only-allow yarn",
     "postinstall": "husky"
   },

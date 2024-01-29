@@ -5,7 +5,7 @@ import { useAuth } from 'solid-firebase';
 import { Show, createSignal } from 'solid-js';
 import { useGlobalContext } from '@/context/GlobalContext';
 import { Game } from '@/game_logic/Game';
-import { initBoard } from '@/game_logic/GameFunctions';
+import { initBoard, swapHexesCloudFunction } from '@/game_logic/GameFunctions';
 import { GameUI } from '@/game_logic/GameUI';
 import styles from '@/pages/Firebase/Firebase.module.scss';
 
@@ -132,7 +132,7 @@ export const Firebase = () => {
           </button>
           <button onClick={() => updateSession(sessionId(), context.game())}>Update Session</button>
 
-          <button onClick={() => console.log(context.game())}>Print Current Room</button>
+          <button onClick={() => console.log(swapHexesCloudFunction(sessionId()))}>Print Current Room</button>
           <button onClick={() => context.setGame(addPlayer(context.game(), state.data!.uid))}>Add Player</button>
 
           <Show when={showGameUI()}>
