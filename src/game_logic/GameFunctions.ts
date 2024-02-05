@@ -100,5 +100,5 @@ export const swapHexesCloudFunction = async (sessionId: string, swapFrom?: HexSp
     body: JSON.stringify({ sessionId, swapFrom, swapTo }),
   });
   if (!res.ok) throw Error('Failed to fetch user');
-  return await res.json();
+  return res.json();
 };

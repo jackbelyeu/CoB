@@ -132,7 +132,10 @@ export const Firebase = () => {
           </button>
           <button onClick={() => updateSession(sessionId(), context.game())}>Update Session</button>
 
-          <button onClick={() => console.log(swapHexesCloudFunction(sessionId()))}>Print Current Room</button>
+          <button onClick={() => console.log(swapHexesCloudFunction(sessionId()))}>Try Cloud Function</button>
+          <button onClick={() => console.log(swapHexesCloudFunction('tester'))}>
+            Try Cloud Function Hard Coded input
+          </button>
           <button onClick={() => context.setGame(addPlayer(context.game(), state.data!.uid))}>Add Player</button>
 
           <Show when={showGameUI()}>
