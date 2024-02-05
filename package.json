@@ -39,6 +39,7 @@
     "lint:fix": "eslint --fix src && stylelint --fix src/**/*.scss",
     "deploy": "firebase deploy",
     "deploy:functions": "firebase deploy --only functions",
+    "emulate": "firebase emulators:start",
     "preinstall": "npx only-allow yarn",
     "postinstall": "husky"
   },
