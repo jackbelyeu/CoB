@@ -24,14 +24,15 @@ export const helloWorld = onRequest((req, res) => {
   res.send('Hello from Firebase!');
 });
 
+//
 type RequestSwapHexes = { sessionId: string; swapFrom: any; swapTo: any };
 
 export const swapHexes = onRequest((req, res) => {
-  const body: RequestSwapHexes = JSON.parse(req.body);
+  const body: RequestSwapHexes = req.body;
   const ref = db.ref(`session/${body.sessionId}`);
 
   ref.set('hello world');
 
   logger.info(req, { structuredData: true });
-  res.send('success');
+  res.send(JSON.stringify({ result: 'success' }));
 });
