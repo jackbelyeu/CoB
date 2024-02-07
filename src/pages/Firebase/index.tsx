@@ -62,28 +62,6 @@ const createSession = (playerId: string) => {
   set(reference, game);
 };
 
-const attachListener = (sessionId: string): Promise<Game> => {
-  return new Promise((resolve, reject) => {
-    const sessionReference = ref(db, `session/${sessionId}`);
-    onValue(
-      sessionReference,
-      snapshot => {
-        const data = snapshot.val();
-        if (data) {
-          console.log(data);
-          resolve(data);
-        } else {
-          reject(new Error('Data not found in database.'));
-        }
-      },
-      error => {
-        console.error('Error fetching data from database.', error);
-        reject(error);
-      }
-    );
-  });
-};
-
 const updateSession = (sessionId: string, game: Game) => {
   const reference = ref(db, `session/${sessionId}`);
   set(reference, game);
@@ -106,6 +84,28 @@ export const Firebase = () => {
   const [sessionId, setSessionId] = createSignal('');
   const [showGameUI, setShowGameUI] = createSignal<boolean>(false);
 
+  const attachListener = (sessionId: string): Promise<Game> => {
+    return new Promise((resolve, reject) => {
+      const sessionReference = ref(db, `session/${sessionId}`);
+      onValue(
+        sessionReference,
+        snapshot => {
+          const data = snapshot.val();
+          if (data) {
+            context.setGame(data);
+            resolve(data);
+          } else {
+            reject(new Error('Data not found in database.'));
+          }
+        },
+        error => {
+          console.error('Error fetching data from database.', error);
+          reject(error);
+        }
+      );
+    });
+  };
+
   return (
     <div class={styles.Firebase}>
       <h1>Firebase</h1>
@@ -123,8 +123,8 @@ export const Firebase = () => {
           <input placeholder="Enter session id here" onChange={e => setSessionId(e.currentTarget.value)} />
           <button onClick={() => createSession(state.data!.uid)}>Create Session</button>
           <button
-            onClick={async () => {
-              context.setGame(await attachListener(sessionId()));
+            onClick={() => {
+              attachListener(sessionId());
               setShowGameUI(true);
             }}
           >
