@@ -10,7 +10,7 @@ export const App = (props: ParentProps) => (
         Home
       </A>
       <A href="/firebase" end>
-        Firebase
+        Castles of Burgundy
       </A>
     </Navbar>
     {props.children}

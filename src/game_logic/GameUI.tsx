@@ -41,7 +41,7 @@ export const GameUI = () => {
       <For each={context.game().players}>
         {player => (
           <div>
-            <For each={context.game().playerBoard.estate}>
+            <For each={player.estate}>
               {row => (
                 <div>
                   <For each={row}>

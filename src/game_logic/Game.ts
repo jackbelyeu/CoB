@@ -182,15 +182,13 @@ class Box {
 
 export class Game {
   gameBoard: GameBoard;
-  playerBoard: PlayerBoard;
   box: Box;
-  players: string[];
+  players: PlayerBoard[];
 
   constructor() {
     this.gameBoard = new GameBoard();
-    this.playerBoard = new PlayerBoard();
     this.box = new Box();
-    this.players = [];
+    this.players = [new PlayerBoard(), new PlayerBoard()];
   }
 }
 
@@ -201,6 +199,7 @@ class PlayerBoard {
   storage: [HexSpace, HexSpace, HexSpace];
   estate: (HexSpace | null)[][];
   dice: [Dice, Dice];
+  playerName: string;
 
   constructor() {
     this.silverlings = 1;
@@ -214,6 +213,7 @@ class PlayerBoard {
     this.storage = [new HexSpace(TileType.Empty), new HexSpace(TileType.Empty), new HexSpace(TileType.Empty)];
     this.estate = boardOne;
     this.dice = [new Dice(), new Dice()];
+    this.playerName = '';
   }
 }
 

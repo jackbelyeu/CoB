@@ -1,13 +1,15 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { getDatabase, ref, set, onValue } from 'firebase/database';
+import { getDatabase, ref, onValue } from 'firebase/database';
 import { useAuth } from 'solid-firebase';
 import { Show, createSignal } from 'solid-js';
 import { useGlobalContext } from '@/context/GlobalContext';
-import { Game } from '@/game_logic/Game';
-import { initBoard, swapHexesCloudFunction } from '@/game_logic/GameFunctions';
+import type { Game } from '@/game_logic/Game';
+import { createSessionCloudFunction, swapHexesCloudFunction } from '@/game_logic/GameFunctions';
 import { GameUI } from '@/game_logic/GameUI';
 import styles from '@/pages/Firebase/Firebase.module.scss';
+
+// Three Terminal Dev Loop 1. yarn dev 2. firebase emulators:start --only functions 3. yarn workspace functions build -w
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -43,36 +45,13 @@ const signInUser = async (email: string, password: string) => {
   }
 };
 
-const generateSessionId = () => {
+export const generateSessionId = () => {
   const possibleChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
   let sessionId = '';
   for (let j = 0; j < 5; j++) {
     sessionId += possibleChars.charAt(Math.floor(Math.random() * possibleChars.length));
   }
   return sessionId;
-};
-
-const createSession = (playerId: string) => {
-  let game = new Game();
-  game = initBoard(game);
-  game = addPlayer(game, playerId);
-  const sessionId = generateSessionId();
-  const reference = ref(db, `session/${sessionId}`);
-  console.log(sessionId);
-  set(reference, game);
-};
-
-const updateSession = (sessionId: string, game: Game) => {
-  const reference = ref(db, `session/${sessionId}`);
-  set(reference, game);
-};
-
-const addPlayer = (game: Game, playerId: string) => {
-  if (!game.players.includes(playerId)) {
-    game.players.push(playerId);
-  }
-
-  return game;
 };
 
 export const Firebase = () => {
@@ -108,7 +87,7 @@ export const Firebase = () => {
 
   return (
     <div class={styles.Firebase}>
-      <h1>Firebase</h1>
+      <h1>Castles of Burgundy</h1>
 
       {!state.data ? (
         <>
@@ -121,7 +100,7 @@ export const Firebase = () => {
         <>
           <button onClick={() => signOut(auth)}>Sign Out</button>
           <input placeholder="Enter session id here" onChange={e => setSessionId(e.currentTarget.value)} />
-          <button onClick={() => createSession(state.data!.uid)}>Create Session</button>
+          <button onClick={() => createSessionCloudFunction(state.data!.uid)}>Create Session</button>
           <button
             onClick={() => {
               attachListener(sessionId());
@@ -130,13 +109,8 @@ export const Firebase = () => {
           >
             Join Session
           </button>
-          <button onClick={() => updateSession(sessionId(), context.game())}>Update Session</button>
 
           <button onClick={() => console.log(swapHexesCloudFunction(sessionId()))}>Try Cloud Function</button>
-          <button onClick={async () => console.log(await swapHexesCloudFunction('tester'))}>
-            Try Cloud Function Hard Coded input
-          </button>
-          <button onClick={() => context.setGame(addPlayer(context.game(), state.data!.uid))}>Add Player</button>
 
           <Show when={showGameUI()}>
             <GameUI />
