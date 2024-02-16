@@ -1,4 +1,5 @@
 import { For, createSignal } from 'solid-js';
+import { Hexagon } from '@/components/Hexagon';
 import { useGlobalContext } from '@/context/GlobalContext';
 import {
   hexSpaceToString,
@@ -7,6 +8,7 @@ import {
   initBoard,
   swapHexBetweenSpaces,
 } from '@/game_logic/GameFunctions';
+import styles from '@/game_logic/GameUI.module.scss';
 import { HexSpace, TileType } from '@/game_logic/Hex';
 
 export const GameUI = () => {
@@ -15,21 +17,24 @@ export const GameUI = () => {
   const [tileToBuy, setTileToBuy] = createSignal<HexSpace>(new HexSpace(TileType.Empty));
 
   return (
-    <div>
+    <div class={styles.GameUI}>
       <For each={context.game().gameBoard.depots}>
         {row => (
           <div>
             <For each={row}>
               {cell => (
-                <button
-                  onClick={() => {
-                    console.log(cell, cell.hex);
-                    setTileToBuy(cell);
-                  }}
-                  style={{ 'background-color': hexSpaceToColor(cell) }}
-                >
-                  {hexSpaceToString(cell)},{hexToString(cell.hex)}
-                </button>
+                <>
+                  <Hexagon color={hexSpaceToColor(cell)} />
+                  <button
+                    onClick={() => {
+                      console.log(cell, cell.hex);
+                      setTileToBuy(cell);
+                    }}
+                    style={{ 'background-color': hexSpaceToColor(cell) }}
+                  >
+                    {hexSpaceToString(cell)},{hexToString(cell.hex)}
+                  </button>
+                </>
               )}
             </For>
           </div>
