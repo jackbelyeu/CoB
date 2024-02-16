@@ -1,6 +1,7 @@
 import { createSignal } from 'solid-js';
 import { useCounter, useMouse } from 'solidjs-use';
 import logo from '@/assets/logo.svg?url';
+import { Hexagon } from '@/components/Hexagon';
 import styles from '@/pages/Home/Home.module.scss';
 import { fetchUser, type UserFetchResponse } from '@/services/userService';
 
@@ -24,6 +25,7 @@ export const Home = () => {
         <button onClick={() => inc()}>+</button>
         <button onClick={() => dec()}>-</button>
       </h3>
+      <Hexagon color="red">Hexagon</Hexagon>
       <br />
       made by Jack Belyeu
     </div>

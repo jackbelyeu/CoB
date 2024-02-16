@@ -128,3 +128,13 @@ export const createSessionCloudFunction = async (playerName: string) => {
   if (!res.ok) throw Error('Failed to fetch user');
   return res.json();
 };
+
+export const joinGameCloudFunction = async (sessionId: string, playerName: string) => {
+  const res = await fetch('http://127.0.0.1:5001/first-firebase-app-74753/us-central1/createGame', {
+    method: 'POST',
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sessionId }),
+  });
+  if (!res.ok) throw Error('Failed to fetch user');
+  return res.json();
+};

@@ -1,0 +1,29 @@
+.hexagon-btn {
+  position: relative;
+  width: 100px;
+  height: 100px; /* Set height equal to width for a regular hexagon */
+  border: none;
+  background-color: #3498db;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+.hexagon-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: inherit;
+  clip-path: polygon(50% 0%, 100% 16.67%, 100% 50%, 50% 83.33%, 0% 50%, 0% 16.67%);
+}
+
+.hexagon-btn:hover {
+  background-color: #2980b9;
+}
