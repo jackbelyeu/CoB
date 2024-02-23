@@ -235,7 +235,7 @@ class GameBoard {
       [new HexSpace(TileType.Buildings, 1), new HexSpace(TileType.Ships, 1)],
       [new HexSpace(TileType.Monasteries, 2), new HexSpace(TileType.Castles, 2)],
       [new HexSpace(TileType.Livestocks, 3), new HexSpace(TileType.Buildings, 3)],
-      [new HexSpace(TileType.Buildings, 1), new HexSpace(TileType.Ships, 4)],
+      [new HexSpace(TileType.Buildings, 4), new HexSpace(TileType.Ships, 4)],
       [new HexSpace(TileType.Monasteries, 5), new HexSpace(TileType.Mines, 5)],
       [new HexSpace(TileType.Livestocks, 6), new HexSpace(TileType.Buildings, 6)],
     ];

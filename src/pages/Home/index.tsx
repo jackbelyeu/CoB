@@ -25,7 +25,24 @@ export const Home = () => {
         <button onClick={() => inc()}>+</button>
         <button onClick={() => dec()}>-</button>
       </h3>
-      <Hexagon color="red">Hexagon</Hexagon>
+      <div style={{ display: 'flex', 'justify-content': 'center' }}>
+        <Hexagon
+          onClick={() => {
+            console.log('clicked');
+          }}
+          color="red"
+        >
+          Hexagon
+        </Hexagon>
+        <Hexagon
+          onClick={() => {
+            console.log('clicked');
+          }}
+          color="blue"
+        >
+          Hexagon
+        </Hexagon>
+      </div>
       <br />
       made by Jack Belyeu
     </div>

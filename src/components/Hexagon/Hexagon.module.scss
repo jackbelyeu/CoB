@@ -1,29 +1,22 @@
 .hexagon-btn {
-  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100px;
   height: 100px; /* Set height equal to width for a regular hexagon */
-  border: none;
-  background-color: #3498db;
-  color: white;
+  background-color: #007bff; /* Set background color */
+  color: #fff; /* Text color */
   font-weight: bold;
-  font-size: 16px;
+  text-align: center;
   text-transform: uppercase;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-}
 
-.hexagon-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: inherit;
-  clip-path: polygon(50% 0%, 100% 16.67%, 100% 50%, 50% 83.33%, 0% 50%, 0% 16.67%);
-}
+  &:hover {
+    background-color: #0056b3; /* Change background color on hover */
+  }
 
-.hexagon-btn:hover {
-  background-color: #2980b9;
+  &:active {
+    transform: scale(0.95); /* Add a slight scale effect on click */
+  }
 }

@@ -20,21 +20,17 @@ export const GameUI = () => {
     <div class={styles.GameUI}>
       <For each={context.game().gameBoard.depots}>
         {row => (
-          <div>
+          <div style={{ display: 'flex', 'justify-content': 'center' }}>
             <For each={row}>
               {cell => (
-                <>
-                  <Hexagon color={hexSpaceToColor(cell)} />
-                  <button
-                    onClick={() => {
-                      console.log(cell, cell.hex);
-                      setTileToBuy(cell);
-                    }}
-                    style={{ 'background-color': hexSpaceToColor(cell) }}
-                  >
-                    {hexSpaceToString(cell)},{hexToString(cell.hex)}
-                  </button>
-                </>
+                <Hexagon
+                  onClick={() => {
+                    console.log('clicked');
+                  }}
+                  color={hexSpaceToColor(cell)}
+                >
+                  {cell.dieValue}
+                </Hexagon>
               )}
             </For>
           </div>
@@ -64,6 +60,9 @@ export const GameUI = () => {
                 </div>
               )}
             </For>
+
+            <button>{player.silverlings}</button>
+            <button>{player.workers}</button>
           </div>
         )}
       </For>
