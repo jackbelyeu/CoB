@@ -9,6 +9,6 @@ describe('firebase page', () => {
         <Route component={Firebase} />
       </Router>
     ));
-    expect(screen.getByText('Firebase')).toBeInTheDocument();
+    expect(screen.getByText('Castles of Burgundy')).toBeInTheDocument();
   });
 });
