@@ -44,16 +44,18 @@ export const GameUI = () => {
           <div>
             <For each={player.estate}>
               {row => (
-                <div>
+                <div style={{ display: 'flex' }}>
                   <For each={row}>
                     {cell =>
                       cell != null && (
-                        <button
-                          onClick={() => swapHexBetweenSpaces(cell, tileToBuy())}
-                          style={{ 'background-color': hexSpaceToColor(cell) }}
+                        <Hexagon
+                          onClick={() => {
+                            console.log('clicked');
+                          }}
+                          color={hexSpaceToColor(cell)}
                         >
                           {hexSpaceToString(cell)},{hexToString(cell.hex)}
-                        </button>
+                        </Hexagon>
                       )
                     }
                   </For>

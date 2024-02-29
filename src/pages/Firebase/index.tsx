@@ -112,6 +112,8 @@ export const Firebase = () => {
 
           <button onClick={() => console.log(swapHexesCloudFunction(sessionId()))}>Try Cloud Function</button>
 
+          <button onClick={() => setShowGameUI(true)}>To Delete Later</button>
+
           <Show when={showGameUI()}>
             <GameUI />
           </Show>
