@@ -34,5 +34,5 @@ render(
       </Router>
     </GlobalContextProvider>
   ),
-  document.querySelector('body')!
+  document.body
 );
