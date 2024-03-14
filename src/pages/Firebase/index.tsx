@@ -60,7 +60,6 @@ export const Firebase = () => {
   const state = useAuth(getAuth(firebaseApp));
 
   const [password, setPassword] = createSignal('');
-  const [sessionId, setSessionId] = createSignal('');
   const [showGameUI, setShowGameUI] = createSignal<boolean>(false);
 
   const attachListener = (sessionId: string): Promise<Game> => {
@@ -99,18 +98,18 @@ export const Firebase = () => {
       ) : (
         <>
           <button onClick={() => signOut(auth)}>Sign Out</button>
-          <input placeholder="Enter session id here" onChange={e => setSessionId(e.currentTarget.value)} />
+          <input placeholder="Enter session id here" onChange={e => context.setSessionId(e.currentTarget.value)} />
           <button onClick={() => createSessionCloudFunction(state.data!.uid)}>Create Session</button>
           <button
             onClick={() => {
-              attachListener(sessionId());
+              attachListener(context.sessionId());
               setShowGameUI(true);
             }}
           >
             Join Session
           </button>
 
-          <button onClick={() => console.log(swapHexesCloudFunction(sessionId()))}>Try Cloud Function</button>
+          <button onClick={() => console.log(swapHexesCloudFunction(context.sessionId()))}>Try Cloud Function</button>
 
           <button onClick={() => setShowGameUI(true)}>To Delete Later</button>
 

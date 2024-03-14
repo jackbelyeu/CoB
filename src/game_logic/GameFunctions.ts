@@ -115,13 +115,23 @@ const addPlayerToGame = (game: Game, playerName: string) => {
   return game;
 };
 
+export const postGameCloudFunction = async (sessionId: string, game: Game) => {
+  const res = await fetch('http://127.0.0.1:5001/first-firebase-app-74753/us-central1/postGame', {
+    method: 'POST',
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sessionId, game }),
+  });
+  if (!res.ok) throw Error('Failed to post game');
+  return res.json();
+};
+
 export const swapHexesCloudFunction = async (sessionId: string, swapFrom?: HexSpace, swapTo?: HexSpace) => {
   const res = await fetch('http://127.0.0.1:5001/first-firebase-app-74753/us-central1/swapHexes', {
     method: 'POST',
     headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
     body: JSON.stringify({ sessionId, swapFrom, swapTo }),
   });
-  if (!res.ok) throw Error('Failed to fetch user');
+  if (!res.ok) throw Error('Failed to swap hexes');
   return res.json();
 };
 
@@ -135,7 +145,7 @@ export const createSessionCloudFunction = async (playerName: string) => {
     headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
     body: JSON.stringify({ sessionId, game }),
   });
-  if (!res.ok) throw Error('Failed to fetch user');
+  if (!res.ok) throw Error('Failed to create game');
   return res.json();
 };
 
@@ -145,7 +155,7 @@ export const joinGameCloudFunction = async (sessionId: string, playerName: strin
     headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
     body: JSON.stringify({ sessionId }),
   });
-  if (!res.ok) throw Error('Failed to fetch user');
+  if (!res.ok) throw Error('Failed to join game');
   return res.json();
 };
 

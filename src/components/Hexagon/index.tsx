@@ -10,9 +10,7 @@ export const Hexagon = (
     }
   };
 
-  const hexagonStyle = props.hasImage
-    ? { 'background-image': `url(${props.image})` }
-    : { 'background-color': props.color };
+  const hexagonStyle = props.hasImage ? { 'background-image': `${props.image}` } : { 'background-color': props.color };
 
   return (
     <div class={styles['hexagon-btn']} style={hexagonStyle} onClick={handleClick}>

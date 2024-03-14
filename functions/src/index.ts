@@ -24,6 +24,16 @@ export const helloWorld = onRequest((req, res) => {
   res.send('Hello from Firebase!');
 });
 
+export const postGame = onRequest((req, res) => {
+  const body = req.body;
+  const ref = db.ref(`session/${body.sessionId}`);
+
+  ref.set(body.game);
+
+  logger.info(req, { structuredData: true });
+  res.send(JSON.stringify({ result: 'success' }));
+});
+
 export const swapHexes = onRequest((req, res) => {
   const body = req.body;
   const ref = db.ref(`session/${body.sessionId}`);

@@ -6,9 +6,9 @@ import {
   hexSpaceToColor,
   hexToString,
   initBoard,
-  swapHexBetweenSpaces,
   rollDiceCloudFunction,
-  hexToImage,
+  swapHexBetweenSpaces,
+  postGameCloudFunction,
 } from '@/game_logic/GameFunctions';
 import styles from '@/game_logic/GameUI.module.scss';
 import { HexSpace, TileType } from '@/game_logic/Hex';
@@ -20,6 +20,10 @@ export const GameUI = () => {
 
   return (
     <div class={styles.GameUI}>
+      <button>{hexToString(tileToBuy().hex)}</button>
+      <button onClick={() => postGameCloudFunction(context.sessionId(), context.game())}>
+        Write current game to rtdb
+      </button>
       <For each={context.game().gameBoard.depots}>
         {row => (
           <div style={{ display: 'flex', 'justify-content': 'center' }}>
@@ -27,11 +31,12 @@ export const GameUI = () => {
               {cell => (
                 <Hexagon
                   onClick={() => {
-                    console.log('clicked');
+                    setTileToBuy(cell);
+                    console.log(cell.hex);
                   }}
                   color={hexSpaceToColor(cell)}
                 >
-                  {cell.dieValue}
+                  {hexSpaceToString(cell)},{hexToString(cell.hex)},{cell.dieValue}
                 </Hexagon>
               )}
             </For>
@@ -52,7 +57,8 @@ export const GameUI = () => {
                       cell != null && (
                         <Hexagon
                           onClick={() => {
-                            console.log('clicked');
+                            console.log(cell.hex);
+                            swapHexBetweenSpaces(cell, tileToBuy());
                           }}
                           color={hexSpaceToColor(cell)}
                         >
