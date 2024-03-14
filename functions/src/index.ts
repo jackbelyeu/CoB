@@ -43,3 +43,15 @@ export const createGame = onRequest((req, res) => {
   logger.info(req, { structuredData: true });
   res.send(JSON.stringify({ result: 'success' }));
 });
+
+export const rollDice = onRequest((req, res) => {
+  const body = req.body;
+  const ref = db.ref(`session/${body.sessionId}/players/0/dice`);
+  const ref2 = db.ref(`session/${body.sessionId}/players/1/dice`);
+
+  ref.set(Math.floor(Math.random() * 6) + 1);
+  ref2.set(Math.floor(Math.random() * 6) + 1);
+
+  logger.info(req, { structuredData: true });
+  res.send(JSON.stringify({ result: 'success' }));
+});

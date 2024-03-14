@@ -47,6 +47,16 @@ export const hexSpaceToColor = (hexSpace: HexSpace) => {
   return color;
 };
 
+export const hexToImage = (hex: Hex) => {
+  switch (hex.type) {
+    case TileType.Ships:
+      return '../assets/burgundy_ship_ai.png';
+
+    default:
+      return '';
+  }
+};
+
 const randomlyPickAndRemoveItemFromArray = (array: Array<any>) => {
   const randomIndex = Math.floor(Math.random() * array.length);
   const item = array[randomIndex];
@@ -136,5 +146,15 @@ export const joinGameCloudFunction = async (sessionId: string, playerName: strin
     body: JSON.stringify({ sessionId }),
   });
   if (!res.ok) throw Error('Failed to fetch user');
+  return res.json();
+};
+
+export const rollDiceCloudFunction = async (sessionId: string) => {
+  const res = await fetch('http://127.0.0.1:5001/first-firebase-app-74753/us-central1/rollDice', {
+    method: 'POST',
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sessionId }),
+  });
+  if (!res.ok) throw Error('Failed to roll dice');
   return res.json();
 };

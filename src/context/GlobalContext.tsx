@@ -5,8 +5,9 @@ import { Game } from '@/game_logic/Game';
 const globalContext = (props: ParentProps) => {
   const [email, setEmail] = createSignal<string>('');
   const [game, setGame] = createSignal<Game>(new Game());
+  const [sessionId, setSessionId] = createSignal<string>('');
 
-  return { email, setEmail, game, setGame };
+  return { email, setEmail, game, setGame, sessionId, setSessionId };
 };
 
 // Initialize Global Context

@@ -7,6 +7,8 @@ import {
   hexToString,
   initBoard,
   swapHexBetweenSpaces,
+  rollDiceCloudFunction,
+  hexToImage,
 } from '@/game_logic/GameFunctions';
 import styles from '@/game_logic/GameUI.module.scss';
 import { HexSpace, TileType } from '@/game_logic/Hex';
@@ -44,7 +46,7 @@ export const GameUI = () => {
           <div>
             <For each={player.estate}>
               {row => (
-                <div style={{ display: 'flex' }}>
+                <div class={styles.row}>
                   <For each={row}>
                     {cell =>
                       cell != null && (
@@ -63,14 +65,18 @@ export const GameUI = () => {
               )}
             </For>
 
+            <For each={player.storage}>{storageTile => <Hexagon color={hexSpaceToColor(storageTile)} />}</For>
+            <For each={player.goods}>{good => <Hexagon color={hexSpaceToColor(good)} />}</For>
+
             <button>{player.silverlings}</button>
             <button>{player.workers}</button>
+            <For each={player.dice}>{die => <button onClick={() => console.log(die.value)}>{die.value}</button>}</For>
           </div>
         )}
       </For>
 
-      <button onClick={() => initBoard(context.game())}>Set/Reset Board</button>
-      <button onClick={() => console.log(context.game().box.discard)}>console log discard</button>
+      <button onClick={() => initBoard(context.game())}>Set/Reset board</button>
+      <button onClick={() => rollDiceCloudFunction(context.sessionId())}>Roll all dice</button>
     </div>
   );
 };
