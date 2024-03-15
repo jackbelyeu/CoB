@@ -9,6 +9,7 @@ import {
   rollDiceCloudFunction,
   swapHexBetweenSpaces,
   postGameCloudFunction,
+  hexToImage,
 } from '@/game_logic/GameFunctions';
 import styles from '@/game_logic/GameUI.module.scss';
 import { HexSpace, TileType } from '@/game_logic/Hex';
@@ -24,6 +25,7 @@ export const GameUI = () => {
       <button onClick={() => postGameCloudFunction(context.sessionId(), context.game())}>
         Write current game to rtdb
       </button>
+
       <For each={context.game().gameBoard.depots}>
         {row => (
           <div style={{ display: 'flex', 'justify-content': 'center' }}>
@@ -35,8 +37,9 @@ export const GameUI = () => {
                     console.log(cell.hex);
                   }}
                   color={hexSpaceToColor(cell)}
+                  image={hexToImage(cell.hex)}
                 >
-                  {hexSpaceToString(cell)},{hexToString(cell.hex)},{cell.dieValue}
+                  {cell.dieValue}
                 </Hexagon>
               )}
             </For>
@@ -61,8 +64,9 @@ export const GameUI = () => {
                             swapHexBetweenSpaces(cell, tileToBuy());
                           }}
                           color={hexSpaceToColor(cell)}
+                          image={hexToImage(cell.hex)}
                         >
-                          {hexSpaceToString(cell)},{hexToString(cell.hex)}
+                          {cell.dieValue}
                         </Hexagon>
                       )
                     }

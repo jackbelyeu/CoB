@@ -1,5 +1,6 @@
 import { createSignal } from 'solid-js';
 import { useCounter, useMouse } from 'solidjs-use';
+import Image from '@/assets/burgundy_ship_ai.png';
 import logo from '@/assets/logo.svg?url';
 import { Hexagon } from '@/components/Hexagon';
 import styles from '@/pages/Home/Home.module.scss';
@@ -31,6 +32,7 @@ export const Home = () => {
             console.log('clicked');
           }}
           color="red"
+          image={Image}
         >
           Hexagon
         </Hexagon>

@@ -1,3 +1,9 @@
+import BuildingImage from '@/assets/Building.png';
+import CastleImage from '@/assets/Castle.png';
+import KnowledgeImage from '@/assets/Knowledge.png';
+import LivestockImage from '@/assets/Livestock.png';
+import MineImage from '@/assets/Mine.png';
+import ShipImage from '@/assets/burgundy_ship_ai.png';
 import { Game } from '@/game_logic/Game';
 import { TileType, type HexSpace, type Hex } from '@/game_logic/Hex';
 import { generateSessionId } from '@/pages/Firebase';
@@ -50,7 +56,17 @@ export const hexSpaceToColor = (hexSpace: HexSpace) => {
 export const hexToImage = (hex: Hex) => {
   switch (hex.type) {
     case TileType.Ships:
-      return '../assets/burgundy_ship_ai.png';
+      return ShipImage;
+    case TileType.Monasteries:
+      return KnowledgeImage;
+    case TileType.Mines:
+      return MineImage;
+    case TileType.Livestocks:
+      return LivestockImage;
+    case TileType.Castles:
+      return CastleImage;
+    case TileType.Buildings:
+      return BuildingImage;
 
     default:
       return '';
