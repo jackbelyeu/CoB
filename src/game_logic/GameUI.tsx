@@ -1,8 +1,9 @@
 import { For, createSignal } from 'solid-js';
+import { useCounter } from 'solidjs-use';
+import { Die } from '@/components/Die';
 import { Hexagon } from '@/components/Hexagon';
 import { useGlobalContext } from '@/context/GlobalContext';
 import {
-  hexSpaceToString,
   hexSpaceToColor,
   hexToString,
   initBoard,
@@ -16,6 +17,8 @@ import { HexSpace, TileType } from '@/game_logic/Hex';
 
 export const GameUI = () => {
   const context = useGlobalContext();
+
+  const { count, inc, dec } = useCounter();
 
   const [tileToBuy, setTileToBuy] = createSignal<HexSpace>(new HexSpace(TileType.Empty));
 
@@ -75,12 +78,35 @@ export const GameUI = () => {
               )}
             </For>
 
-            <For each={player.storage}>{storageTile => <Hexagon color={hexSpaceToColor(storageTile)} />}</For>
+            <For each={player.storage}>
+              {storageTile => (
+                <Hexagon
+                  color={hexSpaceToColor(storageTile)}
+                  onClick={() => {
+                    console.log(storageTile.hex);
+                    swapHexBetweenSpaces(storageTile, tileToBuy());
+                  }}
+                  image={hexToImage(storageTile.hex)}
+                />
+              )}
+            </For>
             <For each={player.goods}>{good => <Hexagon color={hexSpaceToColor(good)} />}</For>
 
-            <button>{player.silverlings}</button>
-            <button>{player.workers}</button>
-            <For each={player.dice}>{die => <button onClick={() => console.log(die.value)}>{die.value}</button>}</For>
+            <h3>
+              Silverlings: {count()}
+              <button onClick={() => inc()}>+</button>
+              <button onClick={() => dec()}>-</button>
+            </h3>
+
+            <h3>
+              Workers: {count()}
+              <button onClick={() => inc()}>+</button>
+              <button onClick={() => dec()}>-</button>
+            </h3>
+
+            <div class={styles.row}>
+              <For each={player.dice}>{die => <Die value={die.value} onClick={() => console.log(die.value)} />}</For>
+            </div>
           </div>
         )}
       </For>

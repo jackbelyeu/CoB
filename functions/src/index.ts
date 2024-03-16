@@ -56,11 +56,15 @@ export const createGame = onRequest((req, res) => {
 
 export const rollDice = onRequest((req, res) => {
   const body = req.body;
-  const ref = db.ref(`session/${body.sessionId}/players/0/dice`);
-  const ref2 = db.ref(`session/${body.sessionId}/players/1/dice`);
+  const ref = db.ref(`session/${body.sessionId}/players/0/dice/0/value`);
+  const ref2 = db.ref(`session/${body.sessionId}/players/0/dice/1/value`);
+  const ref3 = db.ref(`session/${body.sessionId}/players/1/dice/0/value`);
+  const ref4 = db.ref(`session/${body.sessionId}/players/1/dice/1/value`);
 
   ref.set(Math.floor(Math.random() * 6) + 1);
   ref2.set(Math.floor(Math.random() * 6) + 1);
+  ref3.set(Math.floor(Math.random() * 6) + 1);
+  ref4.set(Math.floor(Math.random() * 6) + 1);
 
   logger.info(req, { structuredData: true });
   res.send(JSON.stringify({ result: 'success' }));
