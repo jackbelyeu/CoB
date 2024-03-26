@@ -43,6 +43,22 @@ export const swapHexes_mainBoardToStorage = onRequest((req, res) => {
   res.send(JSON.stringify({ result: 'success' }));
 });
 
+export const swapHexes_storageToEstate = onRequest((req, res) => {
+  const body = req.body;
+  const ref_swapFrom = db.ref(
+    `session/${body.sessionId}/players/${body.playerNumber}/storage/${body.storageNumber}/hex/type`
+  );
+  const ref_swapTo = db.ref(
+    `session/${body.sessionId}/players/${body.playerNumber}/estate/${body.estateRow}/${body.estateCol}/hex`
+  );
+
+  ref_swapFrom.set(8); // Sets giver hex to empty
+  ref_swapTo.set(body.hexToSwap);
+
+  logger.info(req, { structuredData: true });
+  res.send(JSON.stringify({ result: 'success' }));
+});
+
 export const createGame = onRequest((req, res) => {
   const body = req.body;
   const ref = db.ref(`session/${body.sessionId}`);

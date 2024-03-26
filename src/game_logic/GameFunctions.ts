@@ -161,6 +161,32 @@ export const swapHexes_mainBoardToStorage_CloudFunction = async (
   return res.json();
 };
 
+export const swapHexes_storageToEstate_CloudFunction = async (
+  sessionId: string,
+  tileToSwap: HexSpace,
+  playerNumber: number,
+  estateRow: number,
+  estateCol: number,
+  storageNumber: number
+) => {
+  const hexToSwap = tileToSwap.hex;
+
+  const res = await fetch('http://127.0.0.1:5001/first-firebase-app-74753/us-central1/swapHexes_storageToEstate', {
+    method: 'POST',
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      sessionId,
+      playerNumber,
+      estateRow,
+      estateCol,
+      storageNumber,
+      hexToSwap,
+    }),
+  });
+  if (!res.ok) throw Error('Failed to swap hexes');
+  return res.json();
+};
+
 export const createSessionCloudFunction = async (playerName: string) => {
   const sessionId = generateSessionId();
   let game = new Game();

@@ -12,6 +12,7 @@ import {
   changeSilverlingsCloudFunction,
   changeWorkersCloudFunction,
   swapHexes_mainBoardToStorage_CloudFunction,
+  swapHexes_storageToEstate_CloudFunction,
 } from '@/game_logic/GameFunctions';
 import styles from '@/game_logic/GameUI.module.scss';
 import { HexSpace, TileType } from '@/game_logic/Hex';
@@ -21,6 +22,7 @@ export const GameUI = () => {
 
   const [workersAndSilverlings, setWorkersAndSilverlings] = createSignal<number>(0);
   const [tileToBuy, setTileToBuy] = createSignal<[HexSpace, number, number]>([new HexSpace(TileType.Empty), 0, 0]);
+  const [tileToPlay, setTileToPlay] = createSignal<[HexSpace, number]>([new HexSpace(TileType.Empty), 0]);
 
   return (
     <div class={styles.GameUI}>
@@ -70,14 +72,23 @@ export const GameUI = () => {
           {(player, index_player) => (
             <div style={{ flex: '1' }}>
               <For each={player.estate}>
-                {row => (
+                {(row, index_row) => (
                   <div class={styles.row}>
                     <For each={row}>
-                      {cell =>
+                      {(cell, index_col) =>
                         cell != null && (
                           <Hexagon
                             onClick={() => {
                               console.log(cell.hex);
+
+                              swapHexes_storageToEstate_CloudFunction(
+                                context.sessionId(),
+                                tileToPlay()[0],
+                                index_player(),
+                                index_row(),
+                                index_col(),
+                                tileToPlay()[1]
+                              );
                             }}
                             color={hexSpaceToColor(cell)}
                             image={hexToImage(cell.hex)}
@@ -97,15 +108,7 @@ export const GameUI = () => {
                     <Hexagon
                       color={hexSpaceToColor(storageTile)}
                       onClick={() => {
-                        console.log(
-                          context.sessionId(),
-                          tileToBuy()[0],
-                          storageTile,
-                          index_player(),
-                          tileToBuy()[1],
-                          tileToBuy()[2],
-                          index_storage()
-                        );
+                        setTileToPlay([storageTile, index_storage()]);
                         swapHexes_mainBoardToStorage_CloudFunction(
                           context.sessionId(),
                           tileToBuy()[0],
