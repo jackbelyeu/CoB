@@ -69,3 +69,23 @@ export const rollDice = onRequest((req, res) => {
   logger.info(req, { structuredData: true });
   res.send(JSON.stringify({ result: 'success' }));
 });
+
+export const changeSilverlings = onRequest((req, res) => {
+  const body = req.body;
+  const ref = db.ref(`session/${body.sessionId}/players/${body.playerNumber}/silverlings`);
+
+  ref.set(body.number);
+
+  logger.info(req, { structuredData: true });
+  res.send(JSON.stringify({ result: 'success' }));
+});
+
+export const changeWorkers = onRequest((req, res) => {
+  const body = req.body;
+  const ref = db.ref(`session/${body.sessionId}/players/${body.playerNumber}/workers`);
+
+  ref.set(body.number);
+
+  logger.info(req, { structuredData: true });
+  res.send(JSON.stringify({ result: 'success' }));
+});

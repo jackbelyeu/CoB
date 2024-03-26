@@ -221,6 +221,7 @@ class GameBoard {
   phaseSpaces: [Hex[], Hex[], Hex[], Hex[], Hex[]];
   roundSpaces: [HexSpace, HexSpace, HexSpace, HexSpace, HexSpace];
   depots: [HexSpace[], HexSpace[], HexSpace[], HexSpace[], HexSpace[], HexSpace[]];
+  centralBlackTiles: HexSpace[];
 
   constructor() {
     this.phaseSpaces = [[], [], [], [], []];
@@ -238,6 +239,12 @@ class GameBoard {
       [new HexSpace(TileType.Buildings, 4), new HexSpace(TileType.Ships, 4)],
       [new HexSpace(TileType.Monasteries, 5), new HexSpace(TileType.Mines, 5)],
       [new HexSpace(TileType.Livestocks, 6), new HexSpace(TileType.Buildings, 6)],
+    ];
+    this.centralBlackTiles = [
+      new HexSpace(TileType.Empty),
+      new HexSpace(TileType.Empty),
+      new HexSpace(TileType.Empty),
+      new HexSpace(TileType.Empty),
     ];
   }
 }

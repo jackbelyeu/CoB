@@ -109,8 +109,6 @@ export const Firebase = () => {
             Join Session
           </button>
 
-          <button onClick={() => console.log(swapHexesCloudFunction(context.sessionId()))}>Try Cloud Function</button>
-
           <button onClick={() => setShowGameUI(true)}>To Delete Later</button>
 
           <Show when={showGameUI()}>

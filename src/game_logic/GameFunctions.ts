@@ -184,3 +184,23 @@ export const rollDiceCloudFunction = async (sessionId: string) => {
   if (!res.ok) throw Error('Failed to roll dice');
   return res.json();
 };
+
+export const changeSilverlingsCloudFunction = async (sessionId: string, playerNumber: number, number: number) => {
+  const res = await fetch('http://127.0.0.1:5001/first-firebase-app-74753/us-central1/changeSilverlings', {
+    method: 'POST',
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sessionId, playerNumber, number }),
+  });
+  if (!res.ok) throw Error('Failed');
+  return res.json();
+};
+
+export const changeWorkersCloudFunction = async (sessionId: string, playerNumber: number, number: number) => {
+  const res = await fetch('http://127.0.0.1:5001/first-firebase-app-74753/us-central1/changeWorkers', {
+    method: 'POST',
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sessionId, playerNumber, number }),
+  });
+  if (!res.ok) throw Error('Failed');
+  return res.json();
+};
