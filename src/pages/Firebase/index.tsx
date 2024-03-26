@@ -5,7 +5,7 @@ import { useAuth } from 'solid-firebase';
 import { Show, createSignal } from 'solid-js';
 import { useGlobalContext } from '@/context/GlobalContext';
 import type { Game } from '@/game_logic/Game';
-import { createSessionCloudFunction, swapHexesCloudFunction } from '@/game_logic/GameFunctions';
+import { createSessionCloudFunction } from '@/game_logic/GameFunctions';
 import { GameUI } from '@/game_logic/GameUI';
 import styles from '@/pages/Firebase/Firebase.module.scss';
 

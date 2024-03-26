@@ -7,11 +7,11 @@ import {
   hexToString,
   initBoard,
   rollDiceCloudFunction,
-  swapHexBetweenSpaces,
   postGameCloudFunction,
   hexToImage,
   changeSilverlingsCloudFunction,
   changeWorkersCloudFunction,
+  swapHexes_mainBoardToStorage_CloudFunction,
 } from '@/game_logic/GameFunctions';
 import styles from '@/game_logic/GameUI.module.scss';
 import { HexSpace, TileType } from '@/game_logic/Hex';
@@ -20,11 +20,11 @@ export const GameUI = () => {
   const context = useGlobalContext();
 
   const [workersAndSilverlings, setWorkersAndSilverlings] = createSignal<number>(0);
-  const [tileToBuy, setTileToBuy] = createSignal<HexSpace>(new HexSpace(TileType.Empty));
+  const [tileToBuy, setTileToBuy] = createSignal<[HexSpace, number, number]>([new HexSpace(TileType.Empty), 0, 0]);
 
   return (
     <div class={styles.GameUI}>
-      <button>{hexToString(tileToBuy().hex)}</button>
+      <button>{hexToString(tileToBuy()[0].hex)}</button>
       <button onClick={() => postGameCloudFunction(context.sessionId(), context.game())}>
         Write current game to rtdb
       </button>
@@ -33,13 +33,13 @@ export const GameUI = () => {
       <For each={context.game().gameBoard.roundSpaces}>{round => <button>Round Space</button>}</For>
 
       <For each={context.game().gameBoard.depots}>
-        {row => (
+        {(row, index_row) => (
           <div style={{ display: 'flex', 'justify-content': 'center' }}>
             <For each={row}>
-              {cell => (
+              {(cell, index_col) => (
                 <Hexagon
                   onClick={() => {
-                    setTileToBuy(cell);
+                    setTileToBuy([cell, index_row(), index_col()]);
                     console.log(cell.hex);
                   }}
                   color={hexSpaceToColor(cell)}
@@ -56,14 +56,7 @@ export const GameUI = () => {
       <div style={{ display: 'flex', 'justify-content': 'center' }}>
         <For each={context.game().gameBoard.centralBlackTiles}>
           {cell => (
-            <Hexagon
-              onClick={() => {
-                setTileToBuy(cell);
-                console.log(cell.hex);
-              }}
-              color={hexSpaceToColor(cell)}
-              image={hexToImage(cell.hex)}
-            >
+            <Hexagon color={hexSpaceToColor(cell)} image={hexToImage(cell.hex)}>
               {cell.dieValue}
             </Hexagon>
           )}
@@ -74,7 +67,7 @@ export const GameUI = () => {
 
       <div class={styles.playerBoards}>
         <For each={context.game().players}>
-          {(player, index) => (
+          {(player, index_player) => (
             <div style={{ flex: '1' }}>
               <For each={player.estate}>
                 {row => (
@@ -85,7 +78,6 @@ export const GameUI = () => {
                           <Hexagon
                             onClick={() => {
                               console.log(cell.hex);
-                              swapHexBetweenSpaces(cell, tileToBuy());
                             }}
                             color={hexSpaceToColor(cell)}
                             image={hexToImage(cell.hex)}
@@ -101,12 +93,27 @@ export const GameUI = () => {
 
               <div class={styles.row}>
                 <For each={player.storage}>
-                  {storageTile => (
+                  {(storageTile, index_storage) => (
                     <Hexagon
                       color={hexSpaceToColor(storageTile)}
                       onClick={() => {
-                        console.log(storageTile.hex);
-                        swapHexBetweenSpaces(storageTile, tileToBuy());
+                        console.log(
+                          context.sessionId(),
+                          tileToBuy()[0],
+                          storageTile,
+                          index_player(),
+                          tileToBuy()[1],
+                          tileToBuy()[2],
+                          index_storage()
+                        );
+                        swapHexes_mainBoardToStorage_CloudFunction(
+                          context.sessionId(),
+                          tileToBuy()[0],
+                          index_player(),
+                          tileToBuy()[1],
+                          tileToBuy()[2],
+                          index_storage()
+                        );
                       }}
                       image={hexToImage(storageTile.hex)}
                     />
@@ -120,7 +127,9 @@ export const GameUI = () => {
               <h3>
                 Silverlings: {player.silverlings}
                 <button
-                  onClick={() => changeSilverlingsCloudFunction(context.sessionId(), index(), workersAndSilverlings())}
+                  onClick={() =>
+                    changeSilverlingsCloudFunction(context.sessionId(), index_player(), workersAndSilverlings())
+                  }
                 >
                   Apply
                 </button>
@@ -129,7 +138,9 @@ export const GameUI = () => {
               <h3>
                 Workers: {player.workers}
                 <button
-                  onClick={() => changeWorkersCloudFunction(context.sessionId(), index(), workersAndSilverlings())}
+                  onClick={() =>
+                    changeWorkersCloudFunction(context.sessionId(), index_player(), workersAndSilverlings())
+                  }
                 >
                   Apply
                 </button>

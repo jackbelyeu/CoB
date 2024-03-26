@@ -114,12 +114,6 @@ export const initBoard = (game: Game) => {
   return game;
 };
 
-export const swapHexBetweenSpaces = (hexSpaceOne: HexSpace, hexSpaceTwo: HexSpace) => {
-  const temp = hexSpaceOne.hex;
-  hexSpaceOne.hex = hexSpaceTwo.hex;
-  hexSpaceTwo.hex = temp;
-};
-
 const addPlayerToGame = (game: Game, playerName: string) => {
   for (const x of game.players) {
     if (x.playerName === '') {
@@ -141,11 +135,27 @@ export const postGameCloudFunction = async (sessionId: string, game: Game) => {
   return res.json();
 };
 
-export const swapHexesCloudFunction = async (sessionId: string, swapFrom?: HexSpace, swapTo?: HexSpace) => {
-  const res = await fetch('http://127.0.0.1:5001/first-firebase-app-74753/us-central1/swapHexes', {
+export const swapHexes_mainBoardToStorage_CloudFunction = async (
+  sessionId: string,
+  tileToSwap: HexSpace,
+  playerNumber: number,
+  depotNumber: number,
+  depotPosition: number,
+  storageNumber: number
+) => {
+  const hexToSwap = tileToSwap.hex;
+
+  const res = await fetch('http://127.0.0.1:5001/first-firebase-app-74753/us-central1/swapHexes_mainBoardToStorage', {
     method: 'POST',
     headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-    body: JSON.stringify({ sessionId, swapFrom, swapTo }),
+    body: JSON.stringify({
+      sessionId,
+      playerNumber,
+      depotNumber,
+      depotPosition,
+      storageNumber,
+      hexToSwap,
+    }),
   });
   if (!res.ok) throw Error('Failed to swap hexes');
   return res.json();

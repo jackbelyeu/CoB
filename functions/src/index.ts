@@ -19,11 +19,6 @@ const db = admin.database();
 
 // Start writing functions https://firebase.google.com/docs/functions/typescript
 
-export const helloWorld = onRequest((req, res) => {
-  logger.info('Hello logs!');
-  res.send('Hello from Firebase!');
-});
-
 export const postGame = onRequest((req, res) => {
   const body = req.body;
   const ref = db.ref(`session/${body.sessionId}`);
@@ -34,11 +29,15 @@ export const postGame = onRequest((req, res) => {
   res.send(JSON.stringify({ result: 'success' }));
 });
 
-export const swapHexes = onRequest((req, res) => {
+export const swapHexes_mainBoardToStorage = onRequest((req, res) => {
   const body = req.body;
-  const ref = db.ref(`session/${body.sessionId}`);
+  const ref_swapFrom = db.ref(
+    `session/${body.sessionId}/gameBoard/depots/${body.depotNumber}/${body.depotPosition}/hex/type`
+  );
+  const ref_swapTo = db.ref(`session/${body.sessionId}/players/${body.playerNumber}/storage/${body.storageNumber}/hex`);
 
-  ref.set('hello world');
+  ref_swapFrom.set(8); // Sets giver hex to empty
+  ref_swapTo.set(body.hexToSwap);
 
   logger.info(req, { structuredData: true });
   res.send(JSON.stringify({ result: 'success' }));
