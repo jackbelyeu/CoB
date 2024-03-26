@@ -1,9 +1,9 @@
 import { A } from '@solidjs/router';
-import type { ParentProps } from 'solid-js';
+import type { RouteSectionProps } from '@solidjs/router';
 import styles from '@/App.module.scss';
 import { Navbar } from '@/components/Navbar';
 
-export const App = (props: ParentProps) => (
+export const App = (props: RouteSectionProps) => (
   <div class={styles.App}>
     <Navbar>
       <A href="/" end>
